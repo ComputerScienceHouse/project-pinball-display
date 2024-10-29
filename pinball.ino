@@ -862,6 +862,22 @@ void display_csh_logo() {
     clear_display();
 }
 
+void extra_ball_notif() {
+  static const char* eb[] = { "Extra Ball", "At", "300000" };
+  clear_display();
+  drawCenteredTextMultipleWords(eb, 3, scaleColor(7,0,0), 1, current_font);
+  delay(4000);
+  clear_display();
+}
+
+void replay_notif() {
+  static const char* replay_num[] = { "Replay", "At", "400000" };
+  clear_display();
+  drawCenteredTextMultipleWords(replay_num, 3, scaleColor(7,0,0), 1, current_font);
+  delay(4000);
+  clear_display();
+}
+
 // Function to scale colors based on brightness (integer brightness from 1 to 7)
 uint16_t scaleColor(uint8_t r, uint8_t g, uint8_t b) {
     // Scale each color component by brightness and ensure it's within the 0-7 range
@@ -872,7 +888,7 @@ uint16_t scaleColor(uint8_t r, uint8_t g, uint8_t b) {
 }
 
 
-
+// BIG OL ATTRACT MODE
 void attractMode() {
     // Variables
     static const char* attract1[] = { "CSH", "Pinball" };
@@ -890,6 +906,14 @@ void attractMode() {
     static const char* attract13[] = { "High", "Score 4", high_score_4 };
     static const char* attract14[] = { "Events" };
     static const char* attract15[] = { "Imagine", "RIT", "2024" };
+    static const char* attract16[] = { "You Should", "Check Out", "The" };
+    static const char* attract17[] = { "Rochester", "Pinball", "Collective" };
+    static const char* attract18[] = { "https://ro", "chesterpin", "ball.com" };
+    static const char* attract19[] = { "We Love", "Stern", "Pinball" };
+    static const char* attract20[] = { "Williams", "They Cool", "Too" };
+    static const char* attract21[] = { "Inspired", "By Stern's", "Deadpool" };
+    static const char* attract22[] = { "Strong", "Museum" };
+
 
     clear_display();
 
@@ -916,6 +940,9 @@ void attractMode() {
       drawCenteredTextMultipleWords(attract8, 3, scaleColor(7, 1, 0), 1, current_font);
       delay(4000);
     }
+
+    extra_ball_notif();
+    replay_notif();
 
     // Everyones Names
     drawCenteredTextMultipleWords(attract2, 3, scaleColor(7, 1, 0), 1, current_font);
@@ -945,11 +972,32 @@ void attractMode() {
     drawCenteredTextMultipleWords(attract15, 3, scaleColor(7, 1, 0), 1, current_font);
     delay(4000);
 
+    // Cool Places Advertisement
+    drawCenteredTextMultipleWords(attract16, 3, scaleColor(7, 1, 0), 1, current_font);
+    delay(4000);
+    drawCenteredTextMultipleWords(attract17, 3, scaleColor(3, 7, 0), 1, current_font);
+    delay(4000);
+
+    current_font = &dotmatrixdisplay3pt7b;
+    drawCenteredTextMultipleWords(attract18, 3, scaleColor(3, 7, 0), 1, current_font);
+    delay(4000);
+    current_font = &dotmatrixdisplay4pt7b;
+
+    drawCenteredTextMultipleWords(attract21, 3, scaleColor(7, 0, 0), 1, current_font);
+    delay(4000);
+    drawCenteredTextMultipleWords(attract20, 3, scaleColor(7, 1, 0), 1, current_font);
+    delay(4000);
+    drawCenteredTextMultipleWords(attract16, 3, scaleColor(7, 1, 0), 1, current_font);
+    delay(4000);
+    drawCenteredTextMultipleWords(attract22, 2, scaleColor(3, 7, 0), 1, current_font);
+    delay(4000);
+
+
     // Sardine Can Animation
     brightness = 0.1;
     for (int i = 0; i < myBitmapallArray_LEN; i++) {
       displayBitmapWithYellowTint(myBitmapallArray[i], 64, 32, 1.2);  // Assuming 32x32 images, adjust if needed
-      delay(20);
+      delay(300);
     }
     clear_display();
     brightness = 1;
@@ -1003,44 +1051,69 @@ void warning_animation(int num_of_warnings) {
 }
 
 void ball_saved_animation() {
-  static const char* ball_status[] = { "BALL SAVED!" };
+  static const char* ball_status[] = { "Ball", "Saved!" };
+
   clear_display();
-  drawCenteredTextMultipleWords(ball_status, 1, matrix.Color333(7,1,0), 1, current_font);
+  drawCenteredTextMultipleWords(ball_status, 2, matrix.Color333(0,7,0), 1, current_font);
   delay(500);
   clear_display();
   delay(100);
-  drawCenteredTextMultipleWords(ball_status, 1, matrix.Color333(7,1,0), 1, current_font);
+  drawCenteredTextMultipleWords(ball_status, 2, matrix.Color333(0,7,0), 1, current_font);
   delay(500);
   clear_display();
   delay(100);
-  drawCenteredTextMultipleWords(ball_status, 1, matrix.Color333(7,1,0), 1, current_font);
+  drawCenteredTextMultipleWords(ball_status, 2, matrix.Color333(0,7,0), 1, current_font);
   delay(500);
   clear_display();
   delay(100);
-  drawCenteredTextMultipleWords(ball_status, 1, matrix.Color333(7,1,0), 1, current_font);
+  drawCenteredTextMultipleWords(ball_status, 2, matrix.Color333(0,7,0), 1, current_font);
   delay(500);
   clear_display();
   delay(100);
-  drawCenteredTextMultipleWords(ball_status, 1, matrix.Color333(7,1,0), 1, current_font);
+  drawCenteredTextMultipleWords(ball_status, 2, matrix.Color333(0,7,0), 1, current_font);
   delay(500);
   clear_display();
   delay(100);
-  drawCenteredTextMultipleWords(ball_status, 1, matrix.Color333(7,1,0), 1, current_font);
+  drawCenteredTextMultipleWords(ball_status, 2, matrix.Color333(0,7,0), 1, current_font);
   delay(500);
   clear_display();
   delay(100);
 }
 
-void playfield_multiplier_animation() {
+void playfield_multiplier_animation(const char* multiplier) {
+  static const char* playfield_status[] = { "Playfield", multiplier };
 
+  clear_display();
+  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7,7,7), 1, current_font);
+  delay(700);
+  clear_display();
+  delay(500);
+  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7,7,7), 1, current_font);
+  delay(700);
+  clear_display();
+  delay(500);
+  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7,7,7), 1, current_font);
+  delay(700);
+  clear_display();
+  delay(500);
+  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7,7,7), 1, current_font);
+  delay(700);
+  clear_display();
+  delay(500);
+  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7,7,7), 1, current_font);
+  delay(700);
+  clear_display();
+  delay(500);
 }
 
 // Player X, you're up
-void player_up() {
-
+void player_up(const char* player) {
+  static const char* display_status[] = { "Player", player, "You're Up!" };
+  clear_display();
+  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
+  delay(5000);
+  clear_display();
 }
-
-
 
 void setup() {
     // Get Scores from 2040 later
@@ -1056,13 +1129,17 @@ void setup() {
 
     attract_mode = true;
 
-    ball_saved_animation();
+    // List of animations that you can call
+    //ball_saved_animation();
+    //playfield_multiplier_animation("2x!");
+    //warning_animation(warning_num);
+    //player_up("2");
 
     // Set text size to 1 (8x8 pixels)
     matrix.setTextSize(1);
 }
 
-bool inGame = true;
+bool inGame = false;
 void loop() {
   if (inGame == true) {
     attract_mode = false;
@@ -1070,9 +1147,6 @@ void loop() {
     // Do scoring stuff
 
     // Check if any of these occur
-    if (warning == true) {
-      warning_animation(warning_num);
-    }
 
   }
 
