@@ -913,6 +913,11 @@ void attractMode() {
     static const char* attract20[] = { "Williams", "They Cool", "Too" };
     static const char* attract21[] = { "Inspired", "By Stern's", "Deadpool" };
     static const char* attract22[] = { "Strong", "Museum" };
+    static const char* attract23[] = { "And" };
+    static const char* attract24[] = { "Arcade", "80s" };
+    static const char* attract25[] = { "Also", "Finally" };
+    static const char* attract26[] = { "Swill", "burger" };
+    
 
 
     clear_display();
@@ -991,6 +996,14 @@ void attractMode() {
     delay(4000);
     drawCenteredTextMultipleWords(attract22, 2, scaleColor(3, 7, 0), 1, current_font);
     delay(4000);
+    drawCenteredTextMultipleWords(attract23, 1, scaleColor(7, 1, 0), 1, current_font);
+    delay(4000);
+    drawCenteredTextMultipleWords(attract24, 2, scaleColor(3, 7, 0), 1, current_font);
+    delay(4000);
+    drawCenteredTextMultipleWords(attract25, 2, scaleColor(3, 7, 0), 1, current_font);
+    delay(4000);
+    drawCenteredTextMultipleWords(attract26, 2, scaleColor(3, 7, 0), 1, current_font);
+    delay(4000);
 
 
     // Sardine Can Animation
@@ -1002,6 +1015,10 @@ void attractMode() {
     clear_display();
     brightness = 1;
     delay(2000);
+
+    // Ball Animation
+    ball_animation(10, 1);
+    clear_display();
 }
 
 
@@ -1106,6 +1123,267 @@ void playfield_multiplier_animation(const char* multiplier) {
   delay(500);
 }
 
+void bagels_multiball_animation() {
+  int centerX = 32;  // Center of a 64x32 matrix
+  int centerY = 16;
+  int outerRadius = 12; // Outer radius for the bagel
+  int innerRadius = 5;  // Inner radius for the hole
+  static const char* playfield_status[] = { "BAGELS", "MULTIBALL" };
+
+  uint16_t outerColor = matrix.Color333(5, 3, 0);  // Light brown (bagel)
+  uint16_t innerColor = matrix.Color333(3, 2, 1);  // Darker brown (hole)
+
+    // Draw the outer circle (bagel)
+    for (int y = -outerRadius; y <= outerRadius; y++) {
+        for (int x = -outerRadius; x <= outerRadius; x++) {
+            if (x * x + y * y <= outerRadius * outerRadius) {
+                matrix.drawPixel(centerX + x, centerY + y, outerColor);
+                delay(5);
+            }
+        }
+    }
+
+    // Draw the inner circle (bagel hole)
+    for (int y = -innerRadius; y <= innerRadius; y++) {
+        for (int x = -innerRadius; x <= innerRadius; x++) {
+            if (x * x + y * y <= innerRadius * innerRadius) {
+                matrix.drawPixel(centerX + x, centerY + y, innerColor);
+                delay(5);
+            }
+        }
+    }
+
+  delay(700);
+
+  clear_display();
+  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(4,3,0), 1, current_font);
+  delay(400);
+  clear_display();
+  delay(200);
+  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(4,3,0), 1, current_font);
+  delay(400);
+  clear_display();
+  delay(200);
+  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(4,3,0), 1, current_font);
+  delay(400);
+  clear_display();
+  delay(200);
+  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(4,3,0), 1, current_font);
+  delay(400);
+  clear_display();
+  delay(200);
+  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(4,3,0), 1, current_font);
+  delay(400);
+  clear_display();
+  delay(200);
+}
+
+// Ball properties struct
+struct Ball {
+  int x, y;           // Position
+  int xSpeed, ySpeed; // Speed in each direction
+  int size;           // Ball size
+  uint16_t color;     // Ball color
+};
+
+// Triangle properties struct
+struct Triangle {
+  int x, y;           // Position
+  int xSpeed, ySpeed; // Speed in each direction
+  int size;           // Size of the triangle (larger than ball size)
+  uint16_t color;     // Color of the triangle
+};
+
+// Forward declaration of the checkCollision function
+bool checkCollision(Ball &ball1, Ball &ball2);
+bool checkCollision(Ball &ball, Triangle &triangle);
+
+void ball_animation(int durationInSeconds, int initialBalls) {
+  const int maxBalls = 20;       // Max number of balls allowed
+  const int maxTriangles = 20;   // Max number of triangles allowed
+  int numBalls = min(initialBalls, maxBalls); // Start with specified number of balls
+  int numTriangles = 0;          // Start with no triangles
+
+  // Colors for balls and triangles
+  uint16_t colors[] = {
+    matrix.Color333(7, 0, 0),   // Red
+    matrix.Color333(0, 7, 0),   // Green
+    matrix.Color333(0, 0, 7),   // Blue
+    matrix.Color333(7, 7, 0),   // Yellow
+    matrix.Color333(7, 0, 7),   // Magenta
+    matrix.Color333(0, 7, 7),   // Cyan
+    matrix.Color333(7, 7, 7)    // White
+  };
+
+  Ball balls[maxBalls];          // Array to hold balls
+  Triangle triangles[maxTriangles]; // Array to hold triangles
+
+  // Initialize the balls at random locations
+  for (int i = 0; i < numBalls; i++) {
+    balls[i] = {
+      (int)random(0, 64 - 2),   // Random x position (adjusting for size)
+      (int)random(0, 32 - 2),   // Random y position (adjusting for size)
+      (int)random(1, 3),        // Random positive x speed (1 or 2)
+      (int)random(1, 3),        // Random positive y speed (1 or 2)
+      2,                        // Ball size
+      colors[i % 7]            // Color
+    };
+  }
+
+  unsigned long startTime = millis(); // Get the start time
+
+  // Main animation loop
+  while (millis() - startTime <= durationInSeconds * 1000) {
+    matrix.fillScreen(0);  // Clear the screen at the start of each frame
+
+    // Move and draw each ball
+    for (int i = 0; i < numBalls; i++) {
+      Ball &ball = balls[i];
+
+      // Move ball
+      ball.x += ball.xSpeed;
+      ball.y += ball.ySpeed;
+
+      // Check for collision with screen boundaries
+      if (ball.x <= 0 || ball.x >= 64 - ball.size) {
+        ball.xSpeed = -ball.xSpeed;  // Reverse X direction
+      }
+      if (ball.y <= 0 || ball.y >= 32 - ball.size) {
+        ball.ySpeed = -ball.ySpeed;  // Reverse Y direction
+      }
+
+      // Check if the ball hits a corner to spawn a new ball or triangle
+      if ((ball.x <= 0 || ball.x >= 64 - ball.size) && (ball.y <= 0 || ball.y >= 32 - ball.size)) {
+        if (random(0, 40) == 0) { // 1/40 chance to spawn a triangle
+          if (numTriangles < maxTriangles) {
+            triangles[numTriangles] = {
+              (int)random(0, 64 - 4),  // Random x position for triangle (adjusting for size)
+              (int)random(0, 32 - 4),  // Random y position for triangle (adjusting for size)
+              (int)random(1, 3),       // Random positive x speed
+              (int)random(1, 3),       // Random positive y speed
+              4,                       // Triangle size (increased to 4)
+              colors[numTriangles % 7] // Color
+            };
+            numTriangles++;
+          }
+        } else {
+          if (numBalls < maxBalls) {
+            balls[numBalls] = {
+              (int)random(0, 64 - 2),      // Random x position for new ball
+              (int)random(0, 32 - 2),      // Random y position for new ball
+              (int)random(1, 3),           // Random positive x speed
+              (int)random(1, 3),           // Random positive y speed
+              2,                           // Ball size
+              colors[numBalls % 7]        // Color
+            };
+            numBalls++;
+          }
+        }
+      }
+
+      // Draw the ball in its new position
+      matrix.fillRect(ball.x, ball.y, ball.size, ball.size, ball.color);
+    }
+
+    // Move and draw each triangle
+    for (int i = 0; i < numTriangles; i++) {
+      Triangle &triangle = triangles[i];
+
+      // Move triangle
+      triangle.x += triangle.xSpeed;
+      triangle.y += triangle.ySpeed;
+
+      // Check for collision with screen boundaries for triangles
+      if (triangle.x <= 0 || triangle.x >= 64 - triangle.size) {
+        triangle.xSpeed = -triangle.xSpeed;  // Reverse X direction
+      }
+      if (triangle.y <= 0 || triangle.y >= 32 - triangle.size) {
+        triangle.ySpeed = -triangle.ySpeed;  // Reverse Y direction
+      }
+
+      // Draw the triangle in its new position
+      matrix.fillTriangle(triangle.x, triangle.y, triangle.x + triangle.size, triangle.y, triangle.x + triangle.size / 2, triangle.y - triangle.size, triangle.color);
+    }
+
+    // Check for collisions between balls and triangles
+    for (int i = 0; i < numBalls; i++) {
+      for (int j = 0; j < numTriangles; j++) {
+        if (checkCollision(balls[i], triangles[j])) {
+          // Handle collision with triangle (e.g., reverse direction or any other logic)
+          balls[i].xSpeed = -balls[i].xSpeed;
+          balls[i].ySpeed = -balls[i].ySpeed;
+        }
+      }
+    }
+
+    // Check for collisions between balls
+    for (int i = 0; i < numBalls; i++) {
+      for (int j = i + 1; j < numBalls; j++) {
+        if (checkCollision(balls[i], balls[j])) {
+          // Swap directions on collision
+          balls[i].xSpeed = -balls[i].xSpeed;
+          balls[i].ySpeed = -balls[i].ySpeed;
+          balls[j].xSpeed = -balls[j].xSpeed;
+          balls[j].ySpeed = -balls[j].ySpeed;
+        }
+      }
+    }
+
+    delay(30);  // Control the speed of animation
+
+    // Exit the loop after the specified duration
+    if (millis() - startTime >= durationInSeconds * 1000) {
+      break;  // Exit the loop after the specified duration
+    }
+  }
+}
+
+// Function to check if two balls collide
+bool checkCollision(Ball &ball1, Ball &ball2) {
+    int xDist = ball1.x - ball2.x;
+    int yDist = ball1.y - ball2.y;
+    int distanceSquared = (xDist * xDist) + (yDist * yDist);
+    int combinedSize = (ball1.size + ball2.size) / 2; // Adjust based on your logic
+    return distanceSquared < (combinedSize * combinedSize);
+}
+
+// Function to check if a ball collides with a triangle
+bool checkCollision(Ball &ball, Triangle &triangle) {
+    // Simple triangle collision detection (bounding box check)
+    // You may want to implement a more robust collision detection algorithm based on your needs
+    return (ball.x < triangle.x + triangle.size && ball.x + ball.size > triangle.x &&
+            ball.y < triangle.y + triangle.size && ball.y + ball.size > triangle.y);
+}
+
+
+void pcp_multiball_animation() {
+  static const char* playfield_status[] = { "PROJECT", "PINBALL" };
+  static const char* playfield_status2[] = { "MULTIBALL" };
+  ball_animation(8, 12);
+
+  clear_display();
+  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7,1,0), 1, current_font);
+  delay(400);
+  clear_display();
+  delay(200);
+  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7,1,0), 1, current_font);
+  delay(400);
+  clear_display();
+  delay(200);
+  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7,1,0), 1, current_font);
+  delay(400);
+  clear_display();
+  delay(200);
+  drawCenteredTextMultipleWords(playfield_status2, 1, scaleColor(7,1,0), 1, current_font);
+  delay(400);
+  clear_display();
+  delay(200);
+  drawCenteredTextMultipleWords(playfield_status2, 1, scaleColor(7,1,0), 1, current_font);
+  delay(400);
+  clear_display();
+  delay(1400);
+}
+
 // Player X, you're up
 void player_up(const char* player) {
   static const char* display_status[] = { "Player", player, "You're Up!" };
@@ -1134,6 +1412,9 @@ void setup() {
     //playfield_multiplier_animation("2x!");
     //warning_animation(warning_num);
     //player_up("2");
+    //bagels_multiball_animation();
+    //ball_animation(30, 1);
+    //pcp_multiball_animation();
 
     // Set text size to 1 (8x8 pixels)
     matrix.setTextSize(1);
