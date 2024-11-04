@@ -759,10 +759,6 @@ const uint16_t myBitmapsardine0 [] PROGMEM = {
 
 // PARTY BUTTON
 // 'party button', 64x32px
-// 'party button', 64x32px
-// 'party button', 64x32px
-// 'party button', 64x32px
-// 'party button', 64x32px
 const uint16_t _party_button [] PROGMEM = {
 	0x8410, 0x8410, 0x8430, 0x8431, 0x8431, 0x8c51, 0x8c51, 0x8c51, 0x8c72, 0x9492, 0x9492, 0x8c92, 0x94b2, 0x9492, 0x9492, 0x94b3, 
 	0x94b3, 0x94b3, 0x9cd3, 0x94b3, 0x9cd3, 0x9cd3, 0x9cd3, 0x9cd3, 0x9cd3, 0x9cf4, 0x9cf4, 0x9cf4, 0x9cf4, 0x9d14, 0x9cf4, 0x9d14, 
@@ -894,7 +890,6 @@ const uint16_t _party_button [] PROGMEM = {
 	0x7bef, 0x7bcf, 0x73ae, 0x73ae, 0x73af, 0x738e, 0x738e, 0x6b8e, 0x738e, 0x6b8e, 0x6b6d, 0x6b8d, 0x6b6d, 0x6b6d, 0x6b4d, 0x634c
 };
 
-
 // Array of all bitmaps for convenience. (Total bytes used to store images in PROGMEM = 2064)
 const int _allArray_LEN = 1;
 const uint16_t* _allArray[1] = {
@@ -973,7 +968,6 @@ void draw_colored_characters(const char* word, const uint16_t colors[], const GF
         matrix.print(word[i]);          // Draw the character
     }
 }
-
 
 void displayBitmapImage(const uint16_t* bitmap, int width, int height) {
     clear_display();
@@ -1083,7 +1077,7 @@ void display_csh_logo() {
 }
 
 void extra_ball_notif() {
-  static const char* eb[] = { "Extra Ball", "At", "300000" };
+  static const char* eb[] = { "Extra Ball", "At", "30000" };
   clear_display();
   drawCenteredTextMultipleWords(eb, 3, scaleColor(7,0,0), 1, current_font);
   delay(4000);
@@ -1091,7 +1085,7 @@ void extra_ball_notif() {
 }
 
 void replay_notif() {
-  static const char* replay_num[] = { "Replay", "At", "400000" };
+  static const char* replay_num[] = { "Replay", "At", "40000" };
   clear_display();
   drawCenteredTextMultipleWords(replay_num, 3, scaleColor(7,0,0), 1, current_font);
   delay(4000);
@@ -1106,7 +1100,6 @@ uint16_t scaleColor(uint8_t r, uint8_t g, uint8_t b) {
     b = constrain(b * brightness, 0, 7);
     return matrix.Color333(r, g, b);
 }
-
 
 // BIG OL ATTRACT MODE
 void attractMode() {
@@ -1294,11 +1287,11 @@ void attractMode() {
     ball_animation(20, 1);
     clear_display();
 
-    for (int i = 0; i < 5; i++) {
+    // Circular Line Animation
+    for (int i = 0; i < 8; i++) {
       line_circle_animation();
     }
 }
-
 
 // IN GAME ANIMATIONS
 static int warning_num = 0;
@@ -2432,15 +2425,22 @@ void line_circle_animation() {
 
       // Update the display
       matrix.swapBuffers(true);
-      delay(20); // Control speed of the animation
+
+      delay(5);
       
       // Optionally clear the display before the next iteration to avoid trails
       matrix.fillScreen(matrix.Color333(0, 0, 0)); // Clear the screen to black
   }
 }
 
-void jackpot_animation() {
-  static const char* display_status[] = { "JACKPOT" };
+void jackpot_animation(const char* word, const char* word2, int numOfWords) {
+  clear_display();
+
+  // Adjust the array size based on the number of words
+  const char* display_status[2] = { word, nullptr };
+  if (numOfWords > 1 && word2 != nullptr) {
+    display_status[1] = word2;
+  }
 
   int centerX = matrix.width() / 2;
   int centerY = matrix.height() / 2;
@@ -2458,48 +2458,25 @@ void jackpot_animation() {
 
       // Update the display
       matrix.swapBuffers(true);
-      delay(20); // Control speed of the animation
       
       // Optionally clear the display before the next iteration to avoid trails
       // matrix.fillScreen(matrix.Color333(0, 0, 0)); // Clear the screen to black
   }
 
-  // Optional delay after the animation
-  delay(1000); // Pause after animation before restarting
+  clear_display();
+
+  // Call the function to display the text according to the number of words
+  drawCenteredTextMultipleWords(display_status, numOfWords, scaleColor(7,0,0), 1, current_font);
+
+  // Flashing effect with delays
+  for (int i = 0; i < 4; ++i) {
+      delay(100);
+      clear_display();
+      delay(100);
+      drawCenteredTextMultipleWords(display_status, numOfWords, scaleColor(7,0,0), 1, current_font);
+  }
 
   clear_display();
-  drawCenteredTextMultipleWords(display_status, 1, scaleColor(7,0,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 1, scaleColor(7,0,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 1, scaleColor(7,0,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 1, scaleColor(7,0,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 1, scaleColor(7,0,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 1, scaleColor(7,0,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 1, scaleColor(7,0,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 1, scaleColor(7,0,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
 }
 
 void light_house_meeting() {
@@ -2683,15 +2660,206 @@ void light_opcommathon() {
   delay(200);
 }
 
+void add_a_ball_animation() {
+  static const char* display_status[] = { "BALL", "ADDED" };
+
+  clear_display();
+  drawCenteredTextMultipleWords(display_status, 2, scaleColor(0,7,0), 1, current_font);
+  delay(200);
+  clear_display();
+  delay(200);
+  drawCenteredTextMultipleWords(display_status, 2, scaleColor(0,7,0), 1, current_font);
+  delay(200);
+  clear_display();
+  delay(200);
+  drawCenteredTextMultipleWords(display_status, 2, scaleColor(0,7,0), 1, current_font);
+  delay(200);
+  clear_display();
+  delay(200);
+  drawCenteredTextMultipleWords(display_status, 2, scaleColor(0,7,0), 1, current_font);
+  delay(200);
+  clear_display();
+  delay(200);
+  drawCenteredTextMultipleWords(display_status, 2, scaleColor(0,7,0), 1, current_font);
+  delay(200);
+  clear_display();
+  delay(200);
+  drawCenteredTextMultipleWords(display_status, 2, scaleColor(0,7,0), 1, current_font);
+  delay(200);
+  clear_display();
+  delay(200);
+}
+
+void calculate_bonus_animation(int bonus, int drinks, int devcade_games, int imagine_projs, int bonusX) {
+  static const char* display_status[] = { "BONUS" };
+
+  static const char* display_status2[] = { "Drinks", "Dropped", "5 * 5000" };
+  static const char* display_status3[] = { "Devcade", "Games", "1 * 50000" };
+  static const char* display_status4[] = { "Imagine", "Projects",  "5 * 100000" };
+  static const char* display_status5[] = { "Bonus", "X:", "2x" };
+
+  clear_display();
+  drawCenteredTextMultipleWords(display_status, 1, scaleColor(0,7,0), 1, current_font);
+  delay(1500);
+  clear_display();
+  drawCenteredTextMultipleWords(display_status2, 3, scaleColor(0,0,7), 1, current_font);
+  delay(1200);
+  clear_display();
+  drawCenteredTextMultipleWords(display_status3, 3, scaleColor(7,0,0), 1, current_font);
+  delay(1200);
+  clear_display();
+  drawCenteredTextMultipleWords(display_status4, 3, scaleColor(7,5,0), 1, current_font);
+  delay(1200);
+  clear_display();
+  drawCenteredTextMultipleWords(display_status5, 3, scaleColor(7,6,0), 1, current_font);
+  delay(1200);
+  clear_display();
+
+  long bonus1 = bonus + (drinks * 5000);
+  String bonusString = String(bonus1);   // Convert integer to String
+  long bonus2 = bonus1 + (devcade_games * 50000);
+  long bonus3 = bonus2 + (imagine_projs * 100000);
+  long bonus4 = bonus3 * bonusX;
+
+  // Define display_status6 as a modifiable array of const char* pointers
+  static const char* display_status6[2];
+  display_status6[0] = "Bonus";
+  display_status6[1] = bonusString.c_str();  // Convert String to const char*
+  drawCenteredTextMultipleWords(display_status6, 2, scaleColor(7,2,0), 1, current_font);
+  delay(400);
+  clear_display();
+
+  bonusString = String(bonus2);   // Convert integer to String
+  display_status6[1] = bonusString.c_str();  // Convert String to const char*
+  drawCenteredTextMultipleWords(display_status6, 2, scaleColor(7,2,0), 1, current_font);
+  delay(400);
+  clear_display();
+
+  bonusString = String(bonus3);   // Convert integer to String
+  display_status6[1] = bonusString.c_str();  // Convert String to const char*
+  drawCenteredTextMultipleWords(display_status6, 2, scaleColor(7,2,0), 1, current_font);
+  delay(400);
+  clear_display();
+
+  bonusString = String(bonus4);   // Convert integer to String
+  static const char* display_status7[] = { "Bonus", "Total",  ""};
+  display_status7[2] = bonusString.c_str();  // Convert String to const char*
+  drawCenteredTextMultipleWords(display_status7, 3, scaleColor(7,2,0), 1, current_font);
+  delay(1800);
+  clear_display();
+}
+
+void in_game_screen(const char* number1, const char* number2, const char* number3, const char* number4, const char* centeredText, uint16_t color, int spacing, const GFXfont* font) {
+
+    matrix.setFont(font);
+    matrix.setTextSize(1); // Set text size to the smallest available size
+
+    int charWidth = 5;      // Fixed width for each character
+    int lineHeight = 7;     // Height of each line of text
+    int maxDigits = 5;      // We assume up to 5 digits for alignment
+
+    // Top-left positions for the first and second numbers
+    int x1 = 2 - 7;         // Set x position for left alignment with padding
+    int y1 = 7;             // Set y position close to the top for the first number
+    int y2 = y1 + lineHeight + 1;  // Position for the second number, with 1-pixel spacing
+
+    // Draw the first number at the top-left
+    int textLength1 = strlen(number1);
+    for (int j = 0; j < textLength1; j++) {
+        matrix.setCursor(x1 + j * (charWidth + spacing), y1);
+        matrix.setTextColor(color);
+        matrix.print(number1[j]);
+    }
+
+    // Draw the second number directly below the first
+    int textLength2 = strlen(number2);
+    for (int j = 0; j < textLength2; j++) {
+        matrix.setCursor(x1 + j * (charWidth + spacing), y2);
+        matrix.setTextColor(color);
+        matrix.print(number2[j]);
+    }
+
+    // Calculate the x position for the third number to align as if it's a 5-digit number
+    int textLength3 = strlen(number3);
+    int totalWidth = maxDigits * charWidth + (maxDigits - 1) * spacing; // Total width for 5 digits
+    int x3 = WIDTH - totalWidth - 5;  // Align as if it's a 5-digit number, with right padding
+    int y3 = y1;                      // Align y position for the third number at the top
+
+    // Draw the third number at the top-right, aligned with 5-digit spacing
+    for (int j = 0; j < textLength3; j++) {
+        matrix.setCursor(x3 + j * (charWidth + spacing), y3);
+        matrix.setTextColor(color);
+        matrix.print(number3[j]);
+    }
+
+    // Calculate y position for the fourth number, with 1 pixel spacing below the third
+    int y4 = y3 + lineHeight + 1;
+    int textLength4 = strlen(number4);
+
+    // Draw the fourth number directly below the third, aligned with 5-digit spacing
+    for (int j = 0; j < textLength4; j++) {
+        matrix.setCursor(x3 + j * (charWidth + spacing), y4);
+        matrix.setTextColor(color);
+        matrix.print(number4[j]);
+    }
+
+    // Calculate the position for centered text, two pixels below the fourth number
+    int textLengthCentered = strlen(centeredText);
+    int textWidthCentered = textLengthCentered * charWidth + (textLengthCentered - 1) * spacing;
+    int xCentered = ((WIDTH - textWidthCentered) / 2) - 5; // Center the text horizontally
+    int yCentered = y4 + lineHeight + 2;
+
+    // Draw the centered text below the fourth number
+    for (int j = 0; j < textLengthCentered; j++) {
+        matrix.setCursor(xCentered + j * (charWidth + spacing), yCentered);
+        matrix.setTextColor(matrix.Color333(255, 0, 0));
+        matrix.print(centeredText[j]);
+    }
+
+    //delay(100000);  // Delay to allow time for display
+}
+
+void scrolling_text(const char* text, uint16_t color, int speed, const GFXfont* font) {
+    matrix.setFont(font);
+    matrix.setTextSize(1);      // Set text size to the default
+
+    int charWidth = 5;                  // Each character is 5 pixels wide
+    int spacing = 1;                    // 1-pixel space between characters
+    int textLength = strlen(text);      // Total number of characters in the text
+
+    int totalTextWidth = textLength * (charWidth + spacing);  // Total width of all text
+
+    int y = matrix.height();  // Center the text vertically (7 pixels high)
+
+    // Scroll the text from right to left until the last character scrolls fully off the screen
+    for (int offset = matrix.width(); offset >= -totalTextWidth - charWidth; offset--) {
+        matrix.fillRect(0, matrix.height() - 7, matrix.width(), 7, matrix.Color333(0, 0, 0)); // Clear area
+
+        // Draw each character in the string one by one
+        for (int i = 0; i < textLength; i++) {
+            int charX = offset + i * (charWidth + spacing);  // X position for each character
+            if (charX < matrix.width() && (charX + charWidth) >= 0) {  // Only draw if fully within display bounds
+                matrix.setCursor(charX, y);         // Set cursor position for the character
+                matrix.setTextColor(color);         // Set text color
+                matrix.print(text[i]);              // Draw the character
+            }
+        }
+
+        delay(speed);   // Control the scrolling speed
+    }
+}
+
 void setup() {
     // Get Scores from 2040 later
-    strcpy(grand_champion, "GAR 500000");
-    strcpy(high_score_1, "LEO 100000");
-    strcpy(high_score_2, "ETH 50000");
-    strcpy(high_score_3, "IAN 25000");
-    strcpy(high_score_4, "BIG 10000");
+    strcpy(grand_champion, "GAR 50000");
+    strcpy(high_score_1, "LEO 10000");
+    strcpy(high_score_2, "ETH 5000");
+    strcpy(high_score_3, "IAN 2500");
+    strcpy(high_score_4, "BIG 1000");
 
     matrix.begin();
+
+    matrix.setTextWrap(false); // Disable text wrapping
 
     clear_display();
 
@@ -2715,7 +2883,7 @@ void setup() {
     //light_opcommathon();
 
     // Hurry Up Animations
-    //hurry_up_animation("Lounge", 100000);
+    //hurry_up_animation("Lounge", 10000);
 
     //ball_saved_animation();
     //playfield_multiplier_animation("2x!");
@@ -2726,8 +2894,15 @@ void setup() {
     //impossible_skill_shot_animation();
     //super_jets_animation();
     //extra_ball_animation();
-    jackpot_animation();
+    //jackpot_animation("JACKPOT", " ", 1);
+    //jackpot_animation("SUPER", "JACKPOT", 2);
+    //add_a_ball_animation();
+    calculate_bonus_animation(0, 2, 1, 1, 2);
 
+    static const char* numbers[] = { "50000", "20", "60000", "3" };
+    in_game_screen(numbers[0], numbers[1], numbers[2], numbers[3], "Player 1", matrix.Color333(255, 50, 0), 1, current_font);
+    delay(200);
+    scrolling_text("Shoot The RIGHT RAMP!", matrix.Color333(0, 255, 0), 2, current_font);
 
     // When you hit targets / rollovers
     //csh_letters(true, false, true);
@@ -2735,7 +2910,6 @@ void setup() {
     //rtp_letters(true, true, false);
     //big_letters(true, true, true);
     //bepis_letters(true, true, false, true, true);
-
 
     // Set text size to 1 (8x8 pixels)
     matrix.setTextSize(1);
