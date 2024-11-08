@@ -1027,36 +1027,19 @@ void displayBitmapWithYellowTint(const uint16_t* bitmap, int width, int height, 
 
 void press_start_animation() {
   clear_display();
-
-  const char* start_anim1[] = { "Press", "Start"};
-  drawCenteredTextMultipleWords(start_anim1, 2, scaleColor(7, 1, 0), 1, current_font);
-  delay(700);
-  clear_display();
-  delay(700);
-  drawCenteredTextMultipleWords(start_anim1, 2, scaleColor(7, 1, 0), 1, current_font);
-  delay(700);
-  clear_display();
-  delay(700);
-  drawCenteredTextMultipleWords(start_anim1, 2, scaleColor(7, 1, 0), 1, current_font);
-  delay(700);
-  clear_display();
-  delay(700);
-  drawCenteredTextMultipleWords(start_anim1, 2, scaleColor(7, 1, 0), 1, current_font);
-  delay(700);
-  clear_display();
-  delay(700);
-  drawCenteredTextMultipleWords(start_anim1, 2, scaleColor(7, 1, 0), 1, current_font);
-  delay(700);
-  clear_display();
-  delay(700);
-  drawCenteredTextMultipleWords(start_anim1, 2, scaleColor(7, 1, 0), 1, current_font);
-  delay(700);
-  clear_display();
-  delay(700);
-  drawCenteredTextMultipleWords(start_anim1, 2, scaleColor(7, 1, 0), 1, current_font);
-  delay(700);
-  clear_display();
-  delay(1000);
+  
+  const char* start_anim1[] = { "Press", "Start" };
+  uint16_t color = scaleColor(7, 1, 0);
+  int repetitions = 8;  // Number of times the animation repeats
+  
+  for (int i = 0; i < repetitions; i++) {
+    drawCenteredTextMultipleWords(start_anim1, 2, color, 1, current_font);
+    delay(700);
+    clear_display();
+    delay(700);
+  }
+  
+  delay(1000);  // Final delay after the loop completes
 }
 
 void clear_display() {
@@ -1130,18 +1113,11 @@ void attractMode() {
     static const char* attract24[] = { "Arcade", "80s" };
     static const char* attract25[] = { "Also", "Finally" };
     static const char* attract26[] = { "Swill", "burger" };
-    static const char* attract27[] = { "Version", "0.1" };
-    
-
+    static const char* attract27[] = { "Version", "0.8" };
 
     clear_display();
-
     display_csh_logo();
-
     delay(4000);
-
-    // Display the words centered, one on each line
-    //drawCenteredTextMultipleWords(attract1, 2, scaleColor(7, 3, 1), 1, current_font);
     matrix.drawBitmap(0, 0, csh_pinball_image, WIDTH, HEIGHT, scaleColor(7, 1, 0));
     delay(8000);
     
@@ -1296,102 +1272,60 @@ void attractMode() {
 // IN GAME ANIMATIONS
 static int warning_num = 0;
 bool warning = false;
+void show_warning(const char* warning[], int num_words, int duration, int times) {
+    for (int i = 0; i < times; i++) {
+        drawCenteredTextMultipleWords(warning, num_words, matrix.Color333(7, 0, 0), 1, current_font);
+        delay(duration);
+        clear_display();
+        delay(500); // Short delay after clearing display
+    }
+}
 void warning_animation(int num_of_warnings) {
-  clear_display();
-    if (num_of_warnings == 0) {
-        static const char* warning[] = { "WARNING" };
-        drawCenteredTextMultipleWords(warning, 1, matrix.Color333(7,0,0), 1, current_font);
-        delay(900);
-        clear_display();
-        delay(500);
-        drawCenteredTextMultipleWords(warning, 1, matrix.Color333(7,0,0), 1, current_font);
-        delay(900);
-        clear_display();
-        delay(500);
-        drawCenteredTextMultipleWords(warning, 1, matrix.Color333(7,0,0), 1, current_font);
-        delay(900);
-        clear_display();
-        warning_num++;
-    }
+    clear_display();
+
     if (num_of_warnings == 1) {
-        static const char* warning[] = { "WARNING", "WARNING" };
-        drawCenteredTextMultipleWords(warning, 2, matrix.Color333(7,0,0), 1, current_font);
-        delay(900);
-        clear_display();
-        delay(500);
-        drawCenteredTextMultipleWords(warning, 2, matrix.Color333(7,0,0), 1, current_font);
-        delay(900);
-        clear_display();
-        delay(500);
-        drawCenteredTextMultipleWords(warning, 2, matrix.Color333(7,0,0), 1, current_font);
-        delay(900);
-        clear_display();
+        static const char* warning[] = { "WARNING" };
+        show_warning(warning, 1, 900, 3); // Show "WARNING" 3 times with 900ms duration
         warning_num++;
-    }
-    if (num_of_warnings == 2) {
-      static const char* warning[] = { "TILT" };
-        drawCenteredTextMultipleWords(warning, 1, matrix.Color333(7,0,0), 1, current_font);
-        delay(3000);
+    } 
+    else if (num_of_warnings == 2) {
+        static const char* warning[] = { "WARNING", "WARNING" };
+        show_warning(warning, 2, 900, 3); // Show "WARNING WARNING" 3 times with 900ms duration
+        warning_num++;
+    } 
+    else if (num_of_warnings == 3) {
+        static const char* warning[] = { "TILT" };
+        drawCenteredTextMultipleWords(warning, 1, matrix.Color333(7, 0, 0), 1, current_font);
+        delay(5000); // Show "TILT" for 5000ms
         clear_display();
         warning_num = 0;
     }
+
     warning = false;
 }
 
 void ball_saved_animation() {
-  static const char* ball_status[] = { "Ball", "Saved!" };
+    static const char* ball_status[] = { "Ball", "Saved!" };
+    clear_display();
 
-  clear_display();
-  drawCenteredTextMultipleWords(ball_status, 2, matrix.Color333(0,7,0), 1, current_font);
-  delay(500);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(ball_status, 2, matrix.Color333(0,7,0), 1, current_font);
-  delay(500);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(ball_status, 2, matrix.Color333(0,7,0), 1, current_font);
-  delay(500);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(ball_status, 2, matrix.Color333(0,7,0), 1, current_font);
-  delay(500);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(ball_status, 2, matrix.Color333(0,7,0), 1, current_font);
-  delay(500);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(ball_status, 2, matrix.Color333(0,7,0), 1, current_font);
-  delay(500);
-  clear_display();
-  delay(100);
+    for (int i = 0; i < 6; i++) {
+        drawCenteredTextMultipleWords(ball_status, 2, matrix.Color333(0, 7, 0), 1, current_font);
+        delay(500);
+        clear_display();
+        delay(100);
+    }
 }
 
 void playfield_multiplier_animation(const char* multiplier) {
-  static const char* playfield_status[] = { "Playfield", multiplier };
+    static const char* playfield_status[] = { "Playfield", multiplier };
+    clear_display();
 
-  clear_display();
-  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7,7,7), 1, current_font);
-  delay(700);
-  clear_display();
-  delay(500);
-  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7,7,7), 1, current_font);
-  delay(700);
-  clear_display();
-  delay(500);
-  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7,7,7), 1, current_font);
-  delay(700);
-  clear_display();
-  delay(500);
-  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7,7,7), 1, current_font);
-  delay(700);
-  clear_display();
-  delay(500);
-  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7,7,7), 1, current_font);
-  delay(700);
-  clear_display();
-  delay(500);
+    for (int i = 0; i < 5; i++) {
+        drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7, 7, 7), 1, current_font);
+        delay(700);
+        clear_display();
+        delay(500);
+    }
 }
 
 void bagels_multiball_animation() {
@@ -1401,52 +1335,41 @@ void bagels_multiball_animation() {
   int innerRadius = 5;  // Inner radius for the hole
   static const char* playfield_status[] = { "BAGELS", "MULTIBALL" };
 
+  clear_display();
+
   uint16_t outerColor = matrix.Color333(5, 3, 0);  // Light brown (bagel)
   uint16_t innerColor = matrix.Color333(3, 2, 1);  // Darker brown (hole)
 
-    // Draw the outer circle (bagel)
-    for (int y = -outerRadius; y <= outerRadius; y++) {
-        for (int x = -outerRadius; x <= outerRadius; x++) {
-            if (x * x + y * y <= outerRadius * outerRadius) {
-                matrix.drawPixel(centerX + x, centerY + y, outerColor);
-                delay(5);
-            }
-        }
-    }
+  // Draw the outer circle (bagel)
+  for (int y = -outerRadius; y <= outerRadius; y++) {
+      for (int x = -outerRadius; x <= outerRadius; x++) {
+          if (x * x + y * y <= outerRadius * outerRadius) {
+              matrix.drawPixel(centerX + x, centerY + y, outerColor);
+              delay(2);
+          }
+      }
+  }
 
-    // Draw the inner circle (bagel hole)
-    for (int y = -innerRadius; y <= innerRadius; y++) {
-        for (int x = -innerRadius; x <= innerRadius; x++) {
-            if (x * x + y * y <= innerRadius * innerRadius) {
-                matrix.drawPixel(centerX + x, centerY + y, innerColor);
-                delay(5);
-            }
-        }
-    }
+  // Draw the inner circle (bagel hole)
+  for (int y = -innerRadius; y <= innerRadius; y++) {
+      for (int x = -innerRadius; x <= innerRadius; x++) {
+          if (x * x + y * y <= innerRadius * innerRadius) {
+              matrix.drawPixel(centerX + x, centerY + y, innerColor);
+              delay(2);
+          }
+      }
+  }
 
   delay(700);
 
-  clear_display();
-  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(4,3,0), 1, current_font);
-  delay(400);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(4,3,0), 1, current_font);
-  delay(400);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(4,3,0), 1, current_font);
-  delay(400);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(4,3,0), 1, current_font);
-  delay(400);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(4,3,0), 1, current_font);
-  delay(400);
-  clear_display();
-  delay(200);
+  // Use a loop to repeat the text animation
+  for (int i = 0; i < 6; i++) {
+      clear_display();
+      drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(4, 3, 0), 1, current_font);
+      delay(400);  // Display for 400ms
+      clear_display();
+      delay(200);  // Pause for 200ms between iterations
+  }
 }
 
 // Ball properties struct
@@ -1626,65 +1549,63 @@ bool checkCollision(Ball &ball, Triangle &triangle) {
             ball.y < triangle.y + triangle.size && ball.y + ball.size > triangle.y);
 }
 
-
 void pcp_multiball_animation() {
   static const char* playfield_status[] = { "PROJECT", "PINBALL" };
   static const char* playfield_status2[] = { "MULTIBALL" };
+  const int displayColor = scaleColor(7, 1, 0);
+
   ball_animation(8, 12);
 
-  clear_display();
-  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7,1,0), 1, current_font);
-  delay(400);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7,1,0), 1, current_font);
-  delay(400);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7,1,0), 1, current_font);
-  delay(400);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(playfield_status2, 1, scaleColor(7,1,0), 1, current_font);
-  delay(400);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(playfield_status2, 1, scaleColor(7,1,0), 1, current_font);
-  delay(400);
-  clear_display();
-  delay(1400);
+  // Show "PROJECT PINBALL" three times
+  for (int i = 0; i < 3; i++) {
+    clear_display();
+    drawCenteredTextMultipleWords(playfield_status, 2, displayColor, 1, current_font);
+    delay(400);
+    clear_display();
+    delay(200);
+  }
+
+  // Show "MULTIBALL" twice
+  for (int i = 0; i < 2; i++) {
+    clear_display();
+    drawCenteredTextMultipleWords(playfield_status2, 1, displayColor, 1, current_font);
+    delay(400);
+    clear_display();
+    delay(200);
+  }
+
+  delay(1400); // Final delay before ending
 }
 
 void party_button_multiball_animation() {
-    clear_display();
     static const char* button[] = { "No..." };
     static const char* button2[] = { "NOOOO" };
     static const char* playfield_status[] = { "PARTY", "BUTTON" };
     static const char* playfield_status2[] = { "MULTIBALL" };
+    const int displayColor = scaleColor(7, 0, 0);
 
-    brightness= 0.1;
-    displayBitmapImage(_allArray[0], 64, 32);  // Assuming 64x32 images, adjust if needed
+    clear_display();
+    brightness = 0.1;
+    displayBitmapImage(_allArray[0], 64, 32);  // Display initial bitmap
     delay(6000);
     brightness = 1;
 
     clear_display();
-    drawCenteredTextMultipleWords(button, 1, scaleColor(7,0,0), 1, current_font);
+    drawCenteredTextMultipleWords(button, 1, displayColor, 1, current_font);
     delay(800);
-    drawCenteredTextMultipleWords(button2, 1, scaleColor(7,0,0), 1, current_font);
+    drawCenteredTextMultipleWords(button2, 1, displayColor, 1, current_font);
     delay(1200);
 
-    drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7,0,0), 1, current_font);
+    drawCenteredTextMultipleWords(playfield_status, 2, displayColor, 1, current_font);
     delay(900);
-    drawCenteredTextMultipleWords(playfield_status2, 1, scaleColor(7,0,0), 1, current_font);
-    delay(300);
-    clear_display();
-    delay(200);
-    drawCenteredTextMultipleWords(playfield_status2, 1, scaleColor(7,0,0), 1, current_font);
-    delay(200);
-    clear_display();
-    delay(200);
-    drawCenteredTextMultipleWords(playfield_status2, 1, scaleColor(7,0,0), 1, current_font);
-    delay(700);
+
+    // Display "MULTIBALL" with dynamic delays
+    int multiballDelays[] = {300, 200, 200, 1200};
+    for (int i = 0; i < 4; i++) {
+        clear_display();
+        if (i == 0) drawCenteredTextMultipleWords(playfield_status2, 1, displayColor, 1, current_font);
+        delay(multiballDelays[i]);
+    }
     clear_display();
 }
 
@@ -1700,365 +1621,148 @@ void player_up(const char* player) {
 // Skill Shot Animations
 void skill_shot_animation() {
   static const char* display_status[] = { "Skill", "Shot" };
-  clear_display();
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(7,0,6), 1, current_font);
-  delay(500);
-  clear_display();
-  delay(500);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(7,0,6), 1, current_font);
-  delay(500);
-  clear_display();
-  delay(500);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(7,0,6), 1, current_font);
-  delay(500);
-  clear_display();
-  delay(500);
-
   static const char* display_status2[] = { "50000" };
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(7,0,6), 1, current_font);
-  delay(500);
-  clear_display();
-  delay(500);
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(7,0,6), 1, current_font);
-  delay(500);
-  clear_display();
-  delay(500);
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(7,0,6), 1, current_font);
-  delay(500);
-  clear_display();
+  const int displayColor = scaleColor(7, 0, 6);
+
+  // Show "Skill Shot" three times with alternating display and clear
+  for (int i = 0; i < 3; i++) {
+    clear_display();
+    drawCenteredTextMultipleWords(display_status, 2, displayColor, 1, current_font);
+    delay(500);
+    clear_display();
+    delay(500);
+  }
+
+  // Show "50000" three times with alternating display and clear
+  for (int i = 0; i < 3; i++) {
+    clear_display();
+    drawCenteredTextMultipleWords(display_status2, 1, displayColor, 1, current_font);
+    delay(500);
+    clear_display();
+    delay(500);
+  }
 }
 
 void super_skill_shot_animation() {
   static const char* display_status[] = { "Super", "Skill", "Shot" };
-  clear_display();
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(100);
-  clear_display();
-
   static const char* display_status2[] = { "100000" };
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(1,7,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(1,7,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(1,7,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(1,7,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(1,7,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(1,7,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(1,7,0), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(1,7,0), 1, current_font);
-  delay(100);
-  clear_display();
+  const int displayColor = scaleColor(1, 7, 0);
 
+  // Display "Super Skill Shot" 10 times with alternating display and clear
+  for (int i = 0; i < 10; i++) {
+    clear_display();
+    drawCenteredTextMultipleWords(display_status, 3, displayColor, 1, current_font);
+    delay(100);
+    clear_display();
+    delay(100);
+  }
+
+  // Display "100000" 10 times with alternating display and clear
+  for (int i = 0; i < 10; i++) {
+    clear_display();
+    drawCenteredTextMultipleWords(display_status2, 1, displayColor, 1, current_font);
+    delay(100);
+    clear_display();
+    delay(100);
+  }
 }
 
 void impossible_skill_shot_animation() {
   static const char* display_status[] = { "Impossible", "Skill", "Shot!!" };
-  clear_display();
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,7,7), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,7,7), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,7,7), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,7,7), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,7,7), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,7,7), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,7,7), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,7,7), 1, current_font);
-  delay(100);
-  clear_display();
-
   static const char* display_status2[] = { "250000" };
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(7,7,7), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(7,7,7), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(7,7,7), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(7,7,7), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(7,7,7), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(7,7,7), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(7,7,7), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status2, 1, scaleColor(7,7,7), 1, current_font);
-  delay(100);
-  clear_display();
+  const int displayColor = scaleColor(7, 7, 7);
 
+  // Display "Impossible Skill Shot!!" 10 times with alternating display and clear
+  for (int i = 0; i < 10; i++) {
+    clear_display();
+    drawCenteredTextMultipleWords(display_status, 3, displayColor, 1, current_font);
+    delay(100);
+    clear_display();
+    delay(100);
+  }
+
+  // Display "250000" 10 times with alternating display and clear
+  for (int i = 0; i < 10; i++) {
+    clear_display();
+    drawCenteredTextMultipleWords(display_status2, 1, displayColor, 1, current_font);
+    delay(100);
+    clear_display();
+    delay(100);
+  }
 }
 
 void super_jets_animation() {
   static const char* display_status[] = { "SUPER", "JETS" };
-  clear_display();
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(7,0,6), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(7,0,6), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(7,0,6), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(7,0,6), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(7,0,6), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(7,0,6), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(7,0,6), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(7,0,6), 1, current_font);
-  delay(100);
-  clear_display();
+  const int displayColor = scaleColor(7, 0, 6);
+
+  // Display "SUPER JETS" 10 times with alternating display and clear
+  for (int i = 0; i < 10; i++) {
+    clear_display();
+    drawCenteredTextMultipleWords(display_status, 2, displayColor, 1, current_font);
+    delay(100);
+    clear_display();
+    delay(100);
+  }
 }
 
 void light_extra_ball_animation() {
   static const char* display_status[] = { "EXTRA", "BALL", "IS LIT" };
+  const int displayColor = scaleColor(7, 1, 0);
 
-  clear_display();
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
+  // Display "EXTRA BALL IS LIT" 8 times with alternating display and clear
+  for (int i = 0; i < 8; i++) {
+    clear_display();
+    drawCenteredTextMultipleWords(display_status, 3, displayColor, 1, current_font);
+    delay(300);
+    clear_display();
+    delay(300);
+  }
 }
 
 void extra_ball_animation() {
   static const char* display_status[] = { "EXTRA", "BALL" };
-
-  uint16_t silverColor = matrix.Color333(25, 25, 25);  // Approximate silver color
-  int radius = 16;                                     // Radius for the largest ball that fits
-  int centerY = 32 / 2;                                // Center Y position for the ball
-
-  // Start position off-screen to the left
-  int startX = -radius;
-  int endX = 64 + radius;                              // Roll off the screen on the right side
+  const uint16_t silverColor = matrix.Color333(25, 25, 25);  // Approximate silver color
+  const int radius = 16;                                      // Radius for the largest ball that fits
+  const int centerY = 32 / 2;                                 // Center Y position for the ball
+  const int startX = -radius;
+  const int endX = 64 + radius;                               // Roll off the screen on the right side
 
   // Roll the ball from left to right
   for (int x = startX; x <= endX; x++) {
-      matrix.fillScreen(matrix.Color333(0, 0, 0));     // Clear the screen to black
-
-      // Draw the ball at the new position
-      matrix.fillCircle(x, centerY, radius, silverColor);
-
-      // Update display and add delay for smooth rolling effect
-      delay(1);                                       // Adjust delay for speed of the roll
+      matrix.fillScreen(matrix.Color333(0, 0, 0));            // Clear the screen to black
+      matrix.fillCircle(x, centerY, radius, silverColor);     // Draw the ball at the new position
+      delay(1);                                               // Adjust delay for smooth roll
   }
 
   clear_display();
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(2,2,2), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(2,2,2), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(2,2,2), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(2,2,2), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(2,2,2), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(2,2,2), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(2,2,2), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(2,2,2), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(2,2,2), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(2,2,2), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(2,2,2), 1, current_font);
-  delay(100);
-  clear_display();
-  delay(100);
+  const int displayColor = scaleColor(2, 2, 2);
+
+  // Display "EXTRA BALL" 10 times with alternating display and clear
+  for (int i = 0; i < 10; i++) {
+    drawCenteredTextMultipleWords(display_status, 2, displayColor, 1, current_font);
+    delay(100);
+    clear_display();
+    delay(100);
+  }
 }
 
 // Shows which letters are hit, and which letters are not hit using colors
 void csh_letters(bool c, bool s, bool h) {
     const char* word = "CSH";
 
-    // Initialize all colors to grey
+    // Initialize all colors to grey, modify based on boolean values
     uint16_t colors[] = { 0x9cf3, 0x9cf3, 0x9cf3 };
-
-    // Set colors based on the boolean values
     if (c) colors[0] = 0xf80f; // Purple for 'C'
     if (s) colors[1] = 0xf80f; // Purple for 'S'
     if (h) colors[2] = 0xf80f; // Purple for 'H'
 
-    // Draw the word with specified colors
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
+    // Loop to alternate display and clear 10 times
+    for (int i = 0; i < 10; i++) {
+        draw_colored_characters(word, colors, current_font);
+        delay(100);
+        clear_display();
+        delay(100);
+    }
 }
 
 void _1976_rollovers(bool one, bool nine, bool seven, bool six) {
@@ -2073,50 +1777,13 @@ void _1976_rollovers(bool one, bool nine, bool seven, bool six) {
     if (seven) colors[2] = 0xf800; // red for '7'
     if (six) colors[3] = 0xf800; // red for '6'
 
-    // Draw the word with specified colors
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
+    // Loop to alternate display and clear 10 times
+    for (int i = 0; i < 10; i++) {
+        draw_colored_characters(word, colors, current_font);
+        delay(100);
+        clear_display();
+        delay(100);
+    }
 }
 
 void rtp_letters(bool r, bool t, bool p) {
@@ -2130,50 +1797,13 @@ void rtp_letters(bool r, bool t, bool p) {
     if (t) colors[1] = 0xf800; // Purple for 'T'
     if (p) colors[2] = 0xf800; // Purple for 'P'
 
-    // Draw the word with specified colors
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
+    // Loop to alternate display and clear 10 times
+    for (int i = 0; i < 10; i++) {
+        draw_colored_characters(word, colors, current_font);
+        delay(100);
+        clear_display();
+        delay(100);
+    }
 }
 
 void big_letters(bool b, bool i, bool g) {
@@ -2187,50 +1817,13 @@ void big_letters(bool b, bool i, bool g) {
     if (i) colors[1] = 0x051f; // blue for 'I'
     if (g) colors[2] = 0x051f; // blue for 'G'
 
-    // Draw the word with specified colors
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
+    // Loop to alternate display and clear 10 times
+    for (int i = 0; i < 10; i++) {
+        draw_colored_characters(word, colors, current_font);
+        delay(100);
+        clear_display();
+        delay(100);
+    }
 }
 
 void bepis_letters(bool b, bool e, bool p, bool i, bool s) {
@@ -2246,79 +1839,25 @@ void bepis_letters(bool b, bool e, bool p, bool i, bool s) {
     if (i) colors[3] = 0x051f; // red for 'i'
     if (s) colors[4] = 0x051f; // red for 's'
 
-    // Draw the word with specified colors
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
-    delay(100);
-    draw_colored_characters(word, colors, current_font);
-    delay(100);
-    clear_display();
+    // Loop to alternate display and clear 10 times
+    for (int j = 0; j < 10; j++) {
+        draw_colored_characters(word, colors, current_font);
+        delay(100);
+        clear_display();
+        delay(100);
+    }
 }
 
 void light_mystery_animation() {
   static const char* display_status[] = { "MYSTERY", "IS", "LIT" };
 
-  clear_display();
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(300);
-  clear_display();
+  // Loop to alternate between displaying and clearing the message 6 times
+  for (int i = 0; i < 6; i++) {
+    drawCenteredTextMultipleWords(display_status, 3, scaleColor(7, 1, 0), 1, current_font);
+    delay(300);
+    clear_display();
+    delay(300);
+  }
 }
 
 void hurry_up_animation(const char* target, const long initialScore) {
@@ -2350,12 +1889,6 @@ void hurry_up_animation(const char* target, const long initialScore) {
         // Calculate the remaining score based on the time ratio
         float timeRatio = (timerMillis - elapsedTime) / (float)timerMillis; 
         long remainingScore = (long)(initialScore * timeRatio); // Also changed to long
-
-        // Logging for debugging
-        Serial.print("Elapsed Time: "); Serial.println(elapsedTime);
-        Serial.print("Time Ratio: "); Serial.println(timeRatio);
-        Serial.print("Remaining Score: "); Serial.println(remainingScore);
-
         // Ensure the remaining score does not drop below zero
         if (remainingScore < 0) {
             remainingScore = 0; // Avoid negative values
@@ -2482,212 +2015,145 @@ void jackpot_animation(const char* word, const char* word2, int numOfWords) {
 void light_house_meeting() {
   static const char* display_status[] = { "HOUSE", "MEETING", "IS LIT" };
 
-  clear_display();
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(300);
+  const int numCycles = 5; // Number of times the display toggles
+  const int displayDuration = 300; // Duration to show text
+  const int clearDuration = 300;  // Duration to clear display
+
+  // Loop through the cycle of display and clear
+  for (int i = 0; i < numCycles; i++) {
+    drawCenteredTextMultipleWords(display_status, 3, scaleColor(7, 1, 0), 1, current_font);
+    delay(displayDuration); // Show text for specified duration
+    clear_display();        // Clear the display
+    delay(clearDuration);   // Wait before showing again
+  }
+
+  // Optionally, you could clear the display after the final cycle
   clear_display();
 }
 
 void light_bagels_multiball() {
   static const char* display_status[] = { "BAGELS", "MULTIBALL", "IS LIT" };
 
+  const int numCycles = 5; // Number of times the display toggles
+  const int displayDuration = 300; // Duration to show text
+  const int clearDuration = 300;  // Duration to clear display
+
+  // Loop through the cycle of display and clear
+  for (int i = 0; i < numCycles; i++) {
+    drawCenteredTextMultipleWords(display_status, 3, scaleColor(1, 7, 0), 1, current_font);
+    delay(displayDuration); // Show text for specified duration
+    clear_display();        // Clear the display
+    delay(clearDuration);   // Wait before showing again
+  }
+
+  // Optionally, you could clear the display after the final cycle
   clear_display();
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(300);
-  clear_display();
-  delay(300);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(300);
-  clear_display();
-  
 }
 
 void light_pcp_multiball() {
-  
+  // Display the first set of words "PROJECT PINBALL MULTIBALL"
   static const char* display_status[] = { "PROJECT", "PINBALL", "MULTIBALL" };
+  const int numCycles = 5;  // Number of times the text will be displayed
+  const int displayDuration = 200; // Duration for each cycle
+  const int clearDuration = 200;   // Duration for clearing display
 
-  clear_display();
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(1,7,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
+  // Loop to display and clear the first set of words
+  for (int i = 0; i < numCycles; i++) {
+    drawCenteredTextMultipleWords(display_status, 3, scaleColor(1, 7, 0), 1, current_font);
+    delay(displayDuration); // Show text for specified duration
+    clear_display();        // Clear the display
+    delay(clearDuration);   // Wait before showing again
+  }
 
-
+  // Display the second set of words "IS LIT"
   static const char* display_status2[] = { "IS", "LIT" };
-  drawCenteredTextMultipleWords(display_status2, 2, scaleColor(1,7,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status2, 2, scaleColor(1,7,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status2, 2, scaleColor(1,7,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status2, 2, scaleColor(1,7,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status2, 2, scaleColor(1,7,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status2, 2, scaleColor(1,7,0), 1, current_font);
-  delay(200);
+
+  // Loop to display and clear the second set of words
+  for (int i = 0; i < numCycles; i++) {
+    drawCenteredTextMultipleWords(display_status2, 2, scaleColor(1, 7, 0), 1, current_font);
+    delay(displayDuration); // Show text for specified duration
+    clear_display();        // Clear the display
+    delay(clearDuration);   // Wait before showing again
+  }
+
+  // Optional: Clear display at the end (can be omitted if not needed)
   clear_display();
 }
 
 void light_party_button_multiball() {
   static const char* display_status[] = { "PARTY", "BUTTON", "MULTIBALL" };
-
-  clear_display();
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,0,0), 1, current_font);
-  delay(400);
-  clear_display();
-  delay(400);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,0,0), 1, current_font);
-  delay(400);
-  clear_display();
-  delay(400);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,0,0), 1, current_font);
-  delay(400);
-  clear_display();
-  delay(400);
-
   static const char* display_status2[] = { "IS", "LIT" };
-  drawCenteredTextMultipleWords(display_status2, 2, scaleColor(7,0,0), 1, current_font);
-  delay(400);
-  clear_display();
-  delay(400);
-  drawCenteredTextMultipleWords(display_status2, 2, scaleColor(7,0,0), 1, current_font);
-  delay(400);
-  clear_display();
-  delay(400);
-  drawCenteredTextMultipleWords(display_status2, 2, scaleColor(7,0,0), 1, current_font);
-  delay(400);
+
+  const int numCycles = 3;  // Number of times the text will be displayed
+  const int displayDuration = 400; // Duration for each cycle
+  const int clearDuration = 400;   // Duration for clearing display
+
+  // Function to handle the repeated display and clear logic
+  auto displayAndClear = [](const char* status[], int wordsCount) {
+    for (int i = 0; i < numCycles; i++) {
+      drawCenteredTextMultipleWords(status, wordsCount, scaleColor(7, 0, 0), 1, current_font);
+      delay(displayDuration); // Show text for specified duration
+      clear_display();        // Clear the display
+      delay(clearDuration);   // Wait before showing again
+    }
+  };
+
+  // Display the first set of words
+  displayAndClear(display_status, 3);
+
+  // Display the second set of words
+  displayAndClear(display_status2, 2);
+
+  // Optional: Clear display at the end (can be omitted if not needed)
   clear_display();
 }
 
 void light_opcommathon() {
   static const char* display_status[] = { "OP", "COMMATHON", "IS LIT" };
 
+  const int numCycles = 6;  // Number of times the text will be displayed
+  const int displayDuration = 200; // Duration for each cycle
+  const int clearDuration = 200;   // Duration for clearing display
+
+  // Function to handle the repeated display and clear logic
+  auto displayAndClear = [](const char* status[], int wordsCount) {
+    for (int i = 0; i < numCycles; i++) {
+      drawCenteredTextMultipleWords(status, wordsCount, scaleColor(7, 0, 0), 1, current_font);
+      delay(displayDuration); // Show text for specified duration
+      clear_display();        // Clear the display
+      delay(clearDuration);   // Wait before showing again
+    }
+  };
+
+  // Display the words in a loop
+  displayAndClear(display_status, 3);
+
+  // Optional: Clear display at the end (can be omitted if not needed)
   clear_display();
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,0,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,0,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,0,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,0,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,0,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,0,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,0,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,0,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
 }
 
 void add_a_ball_animation() {
   static const char* display_status[] = { "BALL", "ADDED" };
 
+  const int numCycles = 6;  // Number of times the text will be displayed
+  const int displayDuration = 200; // Duration for each cycle
+  const int clearDuration = 200;   // Duration for clearing display
+
+  // Function to handle the repeated display and clear logic
+  auto displayAndClear = [](const char* status[], int wordsCount) {
+    for (int i = 0; i < numCycles; i++) {
+      drawCenteredTextMultipleWords(status, wordsCount, scaleColor(0, 7, 0), 1, current_font);
+      delay(displayDuration); // Show text for specified duration
+      clear_display();        // Clear the display
+      delay(clearDuration);   // Wait before showing again
+    }
+  };
+
+  // Display the words in a loop
+  displayAndClear(display_status, 2);
+
+  // Optional: Clear display at the end (can be omitted if not needed)
   clear_display();
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(0,7,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(0,7,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(0,7,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(0,7,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(0,7,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
-  drawCenteredTextMultipleWords(display_status, 2, scaleColor(0,7,0), 1, current_font);
-  delay(200);
-  clear_display();
-  delay(200);
 }
 
 void calculate_bonus_animation(int bonus, int drinks, int devcade_games, int imagine_projs, int bonusX) {
@@ -2849,6 +2315,55 @@ void scrolling_text(const char* text, uint16_t color, int speed, const GFXfont* 
     }
 }
 
+void debug_animations() {
+  clear_display();
+  // List of animations that you can call
+
+  //MULTIBALLS
+  bagels_multiball_animation();
+  ball_animation(20, 1);
+  pcp_multiball_animation();
+  party_button_multiball_animation();
+
+  // Something is lit animation
+  light_extra_ball_animation();
+  light_mystery_animation();
+  light_house_meeting();
+  light_bagels_multiball();
+  light_pcp_multiball();
+  light_party_button_multiball();
+  light_opcommathon();
+
+  // Hurry Up Animations
+  hurry_up_animation("Lounge", 10000);
+
+  ball_saved_animation();
+  playfield_multiplier_animation("2x!");
+  warning_animation(warning_num);
+  player_up("2");
+  skill_shot_animation();
+  super_skill_shot_animation();
+  impossible_skill_shot_animation();
+  super_jets_animation();
+  extra_ball_animation();
+  jackpot_animation("JACKPOT", " ", 1);
+  jackpot_animation("SUPER", "JACKPOT", 2);
+  add_a_ball_animation();
+  calculate_bonus_animation(0, 2, 1, 1, 2);
+
+  static const char* numbers[] = { "50000", "20", "60000", "3" };
+  in_game_screen(numbers[0], numbers[1], numbers[2], numbers[3], "Player 1", matrix.Color333(255, 50, 0), 1, current_font);
+  delay(200);
+  scrolling_text("Shoot The RIGHT RAMP!", matrix.Color333(0, 255, 0), 0, current_font);
+
+  // When you hit targets / rollovers
+  csh_letters(true, false, true);
+  _1976_rollovers(true, true, false, false);
+  rtp_letters(true, true, false);
+  big_letters(true, true, true);
+  bepis_letters(true, true, false, true, true);
+}
+
 void setup() {
     // Get Scores from 2040 later
     strcpy(grand_champion, "GAR 50000");
@@ -2865,51 +2380,7 @@ void setup() {
 
     attract_mode = true;
 
-    // List of animations that you can call
-
-    //MULTIBALLS
-    //bagels_multiball_animation();
-    //ball_animation(20, 1);
-    //pcp_multiball_animation();
-    //party_button_multiball_animation();
-
-    // Something is lit animation
-    //light_extra_ball_animation();
-    //light_mystery_animation();
-    //light_house_meeting();
-    //light_bagels_multiball();
-    //light_pcp_multiball();
-    //light_party_button_multiball();
-    //light_opcommathon();
-
-    // Hurry Up Animations
-    //hurry_up_animation("Lounge", 10000);
-
-    //ball_saved_animation();
-    //playfield_multiplier_animation("2x!");
-    //warning_animation(warning_num);
-    //player_up("2");
-    //skill_shot_animation();
-    //super_skill_shot_animation();
-    //impossible_skill_shot_animation();
-    //super_jets_animation();
-    //extra_ball_animation();
-    //jackpot_animation("JACKPOT", " ", 1);
-    //jackpot_animation("SUPER", "JACKPOT", 2);
-    //add_a_ball_animation();
-    calculate_bonus_animation(0, 2, 1, 1, 2);
-
-    static const char* numbers[] = { "50000", "20", "60000", "3" };
-    in_game_screen(numbers[0], numbers[1], numbers[2], numbers[3], "Player 1", matrix.Color333(255, 50, 0), 1, current_font);
-    delay(200);
-    scrolling_text("Shoot The RIGHT RAMP!", matrix.Color333(0, 255, 0), 2, current_font);
-
-    // When you hit targets / rollovers
-    //csh_letters(true, false, true);
-    //_1976_rollovers(true, true, false, false);
-    //rtp_letters(true, true, false);
-    //big_letters(true, true, true);
-    //bepis_letters(true, true, false, true, true);
+    debug_animations();
 
     // Set text size to 1 (8x8 pixels)
     matrix.setTextSize(1);
