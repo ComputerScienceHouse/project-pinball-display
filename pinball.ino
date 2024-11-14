@@ -24,6 +24,7 @@ char high_score_1[15] = "";
 char high_score_2[15] = "";
 char high_score_3[15] = "";
 char high_score_4[15]= "";
+char high_score_5[15] = "";
 const GFXfont* current_font = &dotmatrixdisplay4pt7b;
 
 // Statistics Variables
@@ -944,6 +945,43 @@ void drawCenteredTextMultipleWords(const char* words[], int numWords, uint16_t c
     }
 }
 
+void drawCenteredTextMultipleWords3PT(const char* words[], int numWords, uint16_t color, int spacing, const GFXfont* font) {
+    // Clear the display before drawing new text
+    matrix.fillScreen(matrix.Color333(0, 0, 0)); // Clear the matrix to black
+
+    matrix.setFont(font);
+    matrix.setTextSize(1);  // Set text size to the smallest available size
+
+    // Calculate total vertical height based on the number of words and spacing between lines
+    int totalHeight = numWords * (8 + spacing) - spacing;  // Each word is 8 pixels tall, plus spacing
+
+    // Adjust for padding; adjust yStart as necessary
+    int yStart = (HEIGHT - totalHeight) / 2 + 6;  // Shift down by 7 pixels
+
+    // Loop through each word
+    for (int wordIndex = 0; wordIndex < numWords; wordIndex++) {
+        const char* text = words[wordIndex];  // Get current word
+        int textLength = strlen(text);
+
+        // Calculate text width in pixels (5 width per character + custom spacing)
+        int charWidth = 5;  // Fixed width for each character
+        int textWidth = textLength * charWidth + (textLength - 1) * spacing;  // Total width calculation
+
+        // Adjust for padding; shift x position as necessary
+        int x = (WIDTH - textWidth) / 2 - 3; // padding
+
+        // Calculate the y position for this word, considering line height and spacing
+        int y = yStart + wordIndex * (8 + spacing);
+
+        // Draw each character of the word with the correct spacing
+        for (int i = 0; i < textLength; i++) {
+            matrix.setCursor(x + i * (charWidth + spacing), y); // Set cursor for each character
+            matrix.setTextColor(color); // Set the text color
+            matrix.print(text[i]); // Draw the character
+        }
+    }
+}
+
 void draw_colored_characters(const char* word, const uint16_t colors[], const GFXfont* font) {
     // Clear the display before drawing new text
     matrix.fillScreen(matrix.Color333(0, 0, 0)); // Clear the matrix to black
@@ -1100,6 +1138,7 @@ void attractMode() {
     static const char* attract11[] = { "High", "Score 2", high_score_2 };
     static const char* attract12[] = { "High", "Score 3", high_score_3 };
     static const char* attract13[] = { "High", "Score 4", high_score_4 };
+    static const char* attract44[] = { "High", "Score 5", high_score_5 };
     static const char* attract14[] = { "Events" };
     static const char* attract15[] = { "Imagine", "RIT", "2024" };
     static const char* attract16[] = { "You Should", "Check Out", "The" };
@@ -1164,6 +1203,8 @@ void attractMode() {
     delay(4000);
     drawCenteredTextMultipleWords(attract13, 3, scaleColor(7, 1, 0), 1, current_font);
     delay(4000);
+    drawCenteredTextMultipleWords(attract44, 3, scaleColor(7, 1, 0), 1, current_font);
+    delay(4000);
 
     // Events We've Gone to
     drawCenteredTextMultipleWords(attract14, 1, scaleColor(7, 1, 0), 1, current_font);
@@ -1178,7 +1219,7 @@ void attractMode() {
     delay(4000);
 
     current_font = &dotmatrixdisplay3pt7b;
-    drawCenteredTextMultipleWords(attract18, 3, scaleColor(3, 7, 0), 1, current_font);
+    drawCenteredTextMultipleWords3PT(attract18, 3, scaleColor(3, 7, 0), 1, current_font);
     delay(4000);
     current_font = &dotmatrixdisplay4pt7b;
 
@@ -1600,10 +1641,11 @@ void party_button_multiball_animation() {
     delay(900);
 
     // Display "MULTIBALL" with dynamic delays
-    int multiballDelays[] = {300, 200, 200, 1200};
+    int multiballDelays[] = {300, 300, 500, 900};
     for (int i = 0; i < 4; i++) {
         clear_display();
-        if (i == 0) drawCenteredTextMultipleWords(playfield_status2, 1, displayColor, 1, current_font);
+        delay(multiballDelays[i]);
+        drawCenteredTextMultipleWords(playfield_status2, 1, displayColor, 1, current_font);
         delay(multiballDelays[i]);
     }
     clear_display();
@@ -2371,6 +2413,7 @@ void setup() {
     strcpy(high_score_2, "ETH 5000");
     strcpy(high_score_3, "IAN 2500");
     strcpy(high_score_4, "BIG 1000");
+    strcpy(high_score_5, "DAN 500");
 
     matrix.begin();
 
@@ -2380,7 +2423,7 @@ void setup() {
 
     attract_mode = true;
 
-    debug_animations();
+    //debug_animations();
 
     // Set text size to 1 (8x8 pixels)
     matrix.setTextSize(1);
