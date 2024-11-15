@@ -4,6 +4,8 @@
 #include <Fonts/dotmatrixdisplay4pt7b.h> // Custom Font converted from https://rop.nl/truetype2gfx/ I used a dotmatrixdisplay font.
 #include <Fonts/dotmatrixdisplay3pt7b.h>
 #include <Fonts/dotmatrixdisplay2pt7b.h>
+// Ethans Communication Code
+#include "display_shared.h"
 
 // Pin configuration
 #define CLK 11 // Use this on Arduino Mega
@@ -2407,6 +2409,7 @@ void debug_animations() {
 }
 
 void setup() {
+    Serial1.begin(9600);
     // Get Scores from 2040 later
     strcpy(grand_champion, "GAR 50000");
     strcpy(high_score_1, "LEO 10000");
@@ -2442,5 +2445,87 @@ void loop() {
 
   if (attract_mode == true) {
       attractMode();
+  }
+
+  if (Serial1.available()) {
+    if (Serial1.read() == 0x07 && Serial1.read() == 0x02) {
+      unsigned short type = Serial1.read();
+      type <<= 8;
+      type |= Serial1.read();
+      switch (type) {
+        case 0x0001: {
+          // Add Player
+          game_add_player data;
+          Serial.readBytes((char*)&data, sizeof(data));
+          break;
+        }
+        case 0x0003: {
+          // Game Start
+          game_start data;
+          Serial.readBytes((char*)&data, sizeof(data));
+          break;
+        }
+        case 0x0004: {
+          // Game Status Update
+          game_status_update data;
+          Serial.readBytes((char*)&data, sizeof(data));
+          break;
+        }
+        case 0x0005: {
+          // End of Ball
+          end_of_ball data;
+          Serial.readBytes((char*)&data, sizeof(data));
+          break;
+        }
+        case 0x0006: {
+          // Ball Pushed
+          ball_pushed data;
+          Serial.readBytes((char*)&data, sizeof(data));
+          break;
+        }
+        case 0x0007: {
+          // Scoop Light Lit
+          scoop_light data;
+          Serial.readBytes((char*)&data, sizeof(data));
+          break;
+        }
+        case 0x0008: {
+          // Multiball Jackpot (ETHAN TODO)
+          multiball_jackpot data;
+          Serial.readBytes((char*)&data, sizeof(data));
+          break;
+        }
+        case 0x0009: {
+          // Hurry Up (No Data)
+          break;
+        }
+        case 0x000a: {
+          // Thing Hit
+          thing_hit data;
+          Serial.readBytes((char*)&data, sizeof(data));
+          break;
+        }
+        case 0x000b: {
+          // Extra Ball Got (No Data)
+          break;
+        }
+        case 0x000c: {
+          // Skill Shot (No Data)
+          break;
+        }
+        case 0x000d: {
+          // Ball Save (No Data)
+          break;
+        }
+        case 0x000e: {
+          // Tilt Warning (No Data)
+          break;
+        }
+        case 0x000f: {
+          // Tilt! (No Data)
+          break;
+        }
+      }
+    }
   }
 }
