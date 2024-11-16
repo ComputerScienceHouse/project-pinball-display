@@ -2408,6 +2408,55 @@ void debug_animations() {
   bepis_letters(true, true, false, true, true);
 }
 
+bool inGame = false;
+char numPlayers = "0";
+long player_1_score = 0;
+long player_2_score = 0;
+long player_3_score = 0;
+long player_4_score = 0;
+char current_player = "Player ";
+char current_player_number = "0";
+short drinks_dropped = 0;
+short devcade_games = 0;
+short imagine_projects = 0;
+short bonus_multiplier = 0;
+short num_balls_pushed = 0;
+short which_hit = 0;
+short total_warnings = 0;
+void check_for_game_start() {
+  // This code is checking if the start button is pressed
+    if (Serial1.available()) {
+      if (Serial1.read() == 0x07 && Serial1.read() == 0x02) {
+        unsigned short type = Serial1.read();
+        type <<= 8;
+        type |= Serial1.read();
+        switch (type) {
+          case 0x0001: {
+            // Add Player
+            game_add_player data;
+            Serial.readBytes((char*)&data, sizeof(data));
+            
+            // There can't be more than 4 players
+            if (numPlayers != "4") {
+              numPlayers++;
+            }
+
+            break;
+          }
+          case 0x0003: {
+            // Game Start
+            game_start data;
+            Serial.readBytes((char*)&data, sizeof(data));
+            inGame = true;
+            attract_mode = false;
+            break;
+          }
+          
+        }
+      }
+    }
+}
+
 void setup() {
     Serial1.begin(9600);
     // Get Scores from 2040 later
@@ -2424,7 +2473,7 @@ void setup() {
 
     clear_display();
 
-    attract_mode = true;
+    attract_mode = false;
 
     //debug_animations();
 
@@ -2432,100 +2481,226 @@ void setup() {
     matrix.setTextSize(1);
 }
 
-bool inGame = false;
 void loop() {
   if (inGame == true) {
     attract_mode = false;
 
-    // Do scoring stuff
+    // Do scoring stuff (this is the default scoring screen that should be shown at all times unless stated otherwise)
+    in_game_screen(player_1_score, player_2_score, player_3_score, player_4_score, current_player, matrix.Color333(255, 50, 0), 1, current_font);
 
     // Check if any of these occur
+    if (Serial1.available()) {
+      if (Serial1.read() == 0x07 && Serial1.read() == 0x02) {
+        unsigned short type = Serial1.read();
+        type <<= 8;
+        type |= Serial1.read();
+        switch (type) {
+          case 0x0004: {
+            // Game Status Update
+            game_status_update data;
+            Serial.readBytes((char*)&data, sizeof(data));
 
-  }
+            // Get the data
+            player_1_score = data.player_1_score;
+            player_2_score = data.player_2_score;
+            player_3_score = data.player_3_score;
+            player_4_score = data.player_4_score;
+            numPlayers = data.number_of_players;
+            current_player_number = data.current_player;
+            current_player = current_player + current_player_number;
+            break;
+          }
+          case 0x0005: {
+            // End of Ball
+            end_of_ball data;
+            Serial.readBytes((char*)&data, sizeof(data));
 
-  if (attract_mode == true) {
-      attractMode();
-  }
+            drinks_dropped = data.drinks_dropped;
+            devcade_games = data.devcade_games;
+            imagine_projects = data.imagine_projects;
+            bonus_multiplier = data.bonus_multiplier;
 
-  if (Serial1.available()) {
-    if (Serial1.read() == 0x07 && Serial1.read() == 0x02) {
-      unsigned short type = Serial1.read();
-      type <<= 8;
-      type |= Serial1.read();
-      switch (type) {
-        case 0x0001: {
-          // Add Player
-          game_add_player data;
-          Serial.readBytes((char*)&data, sizeof(data));
-          break;
-        }
-        case 0x0003: {
-          // Game Start
-          game_start data;
-          Serial.readBytes((char*)&data, sizeof(data));
-          break;
-        }
-        case 0x0004: {
-          // Game Status Update
-          game_status_update data;
-          Serial.readBytes((char*)&data, sizeof(data));
-          break;
-        }
-        case 0x0005: {
-          // End of Ball
-          end_of_ball data;
-          Serial.readBytes((char*)&data, sizeof(data));
-          break;
-        }
-        case 0x0006: {
-          // Ball Pushed
-          ball_pushed data;
-          Serial.readBytes((char*)&data, sizeof(data));
-          break;
-        }
-        case 0x0007: {
-          // Scoop Light Lit
-          scoop_light data;
-          Serial.readBytes((char*)&data, sizeof(data));
-          break;
-        }
-        case 0x0008: {
-          // Multiball Jackpot (ETHAN TODO)
-          multiball_jackpot data;
-          Serial.readBytes((char*)&data, sizeof(data));
-          break;
-        }
-        case 0x0009: {
-          // Hurry Up (No Data)
-          break;
-        }
-        case 0x000a: {
-          // Thing Hit
-          thing_hit data;
-          Serial.readBytes((char*)&data, sizeof(data));
-          break;
-        }
-        case 0x000b: {
-          // Extra Ball Got (No Data)
-          break;
-        }
-        case 0x000c: {
-          // Skill Shot (No Data)
-          break;
-        }
-        case 0x000d: {
-          // Ball Save (No Data)
-          break;
-        }
-        case 0x000e: {
-          // Tilt Warning (No Data)
-          break;
-        }
-        case 0x000f: {
-          // Tilt! (No Data)
-          break;
+            calculate_bonus_animation(0, drinks_dropped, devcade_games, imagine_projects, bonus_multiplier);
+
+            break;
+          }
+          case 0x0006: {
+            // Ball Pushed
+            ball_pushed data;
+            Serial.readBytes((char*)&data, sizeof(data));
+
+            num_balls_pushed = data.balls_pushed;
+            break;
+          }
+          case 0x0007: {
+            // Scoop Light Lit
+            scoop_light data;
+            Serial.readBytes((char*)&data, sizeof(data));
+
+            switch (data.scoop_light_type) {
+              case MODE:
+                Serial.println("Scoop light type: MODE");
+                switch (data.scoop_light_info.mode) {
+                  case MODE_NONE:
+                    Serial.println("Mode: None");
+                    // Do something for no mode
+                    break;
+                  case YOU_DID_WHAT:
+                    Serial.println("Mode: YOU_DID_WHAT");
+                    // Trigger "You Did What" mode logic
+
+                    // Do Lights shutting off later
+                    break;
+                  case OPCOMMATHON:
+                    Serial.println("Mode: OPCOMMATHON");
+                    // Trigger "Opcommathon" mode logic
+                    light_opcommathon();
+                    break;
+                  case HOUSE_MEETING:
+                    Serial.println("Mode: HOUSE_MEETING");
+                    // Trigger "House Meeting" mode logic
+                    light_house_meeting();
+                    break;
+                  case FINALS:
+                    Serial.println("Mode: FINALS");
+                    // Trigger "Finals" mode logic
+
+                    // Not implemented for display yet
+                    break;
+                  default:
+                    Serial.println("Unknown mode");
+                    break;
+                }
+                break;
+
+              case MULTIBALL:
+                Serial.println("Scoop light type: MULTIBALL");
+                switch (data.scoop_light_info.multiball) {
+                  case MULTI_NONE:
+                    Serial.println("Multiball: None");
+                    // Handle no multiball
+                    break;
+                  case BAGELS:
+                    Serial.println("Multiball: Bagels");
+                    // Handle Bagels multiball
+                    light_bagels_multiball();
+                    break;
+                  case PARTY_BUTTON:
+                    Serial.println("Multiball: Party Button");
+                    // Handle Party Button multiball
+                    light_party_button_multiball();
+                    break;
+                  case PCP:
+                    Serial.println("Multiball: PCP");
+                    // Handle PCP multiball
+                    light_pcp_multiball();
+                    break;
+                  default:
+                    Serial.println("Unknown multiball type");
+                    break;
+                }
+                break;
+
+              case EXTRA_BALL:
+                Serial.println("Scoop light type: EXTRA_BALL");
+                // Handle extra ball logic
+                light_extra_ball_animation();
+                break;
+
+              case MYSTERY:
+                Serial.println("Scoop light type: MYSTERY");
+                // Handle mystery logic
+                light_mystery_animation();
+                break;
+
+              default:
+                Serial.println("Unknown scoop light type");
+                break;
+            }
+            break;
+          }
+          case 0x0008: {
+            // Multiball Jackpot (ETHAN TODO)
+            multiball_jackpot data;
+            Serial.readBytes((char*)&data, sizeof(data));
+
+            jackpot_animation("JACKPOT", " ", 1);
+            break;
+          }
+          case 0x0009: {
+            // Hurry Up (No Data)
+            hurry_up_animation("Lounge", 10000);
+            break;
+          }
+          case 0x000a: {
+            // Thing Hit
+            thing_hit data;
+            Serial.readBytes((char*)&data, sizeof(data));
+
+            which_hit = data.which_hit;
+            break;
+          }
+          case 0x000b: {
+            // Extra Ball Got (No Data)
+            extra_ball_animation();
+            break;
+          }
+          case 0x000c: {
+            // Skill Shot (No Data)
+
+            skill_shot_animation();
+
+            // Other animations do switch statement or something when it is implemented
+            break;
+          }
+          case 0x000d: {
+            // Ball Save (No Data)
+            ball_saved_animation();
+            break;
+          }
+          case 0x000e: {
+            // Tilt Warning (No Data)
+            warning_num++;
+            warning_animation(warning_num);
+            break;
+          }
+          case 0x000f: {
+            // Tilt! (No Data)
+            warning_num = 3;
+            warning_animation(warning_num);
+            warning_num = 0;
+            break;
+          }
         }
       }
     }
+
   }
+
+  // If we are in attract mode, show this screen unless someone presses the start button
+  if (attract_mode == true) {
+    inGame = false;
+    numPlayers = "0";
+    player_1_score = 0;
+    player_2_score = 0;
+    player_3_score = 0;
+    player_4_score = 0;
+    current_player = "Player ";
+    current_player_number = "0";
+    drinks_dropped = 0;
+    devcade_games = 0;
+    imagine_projects = 0;
+    bonus_multiplier = 0;
+    num_balls_pushed = 0;
+    which_hit = 0;
+    total_warnings = 0;
+    warning_num = 0;
+    
+    check_for_game_start();
+
+    attractMode();
+    
+    check_for_game_start();
+  }
+
 }
