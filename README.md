@@ -1,4 +1,6 @@
 # Project-Pinball-Display
+Authors: Garrett Maury 2024
+
 Our Adafruit 64x32 Display Code, Made for an Arduino MEGA
 
 Contains animations and pictures for what we display on the pinball machine!
