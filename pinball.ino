@@ -1067,20 +1067,37 @@ void displayBitmapWithYellowTint(const uint16_t* bitmap, int width, int height, 
 
 void press_start_animation() {
   clear_display();
-  
+
   const char* start_anim1[] = { "Press", "Start" };
   uint16_t color = scaleColor(7, 1, 0);
   int repetitions = 8;  // Number of times the animation repeats
   
-  for (int i = 0; i < repetitions; i++) {
-    drawCenteredTextMultipleWords(start_anim1, 2, color, 1, current_font);
-    delay(700);
-    clear_display();
-    delay(700);
+  unsigned long last_time = micros();  // Use micros for finer timing
+  int state = 0; // Toggles between showing text (0) and clearing display (1)
+  int current_rep = 0;
+
+  while (current_rep < repetitions) {
+    unsigned long current_time = micros();
+
+    if (current_time - last_time >= 700000) {  // 700ms in microseconds
+      last_time = current_time;
+
+      if (state == 0) {
+        drawCenteredTextMultipleWords(start_anim1, 2, color, 1, current_font);
+        state = 1;
+      } else {
+        clear_display();
+        state = 0;
+        current_rep++;
+      }
+    }
   }
-  
-  delay(1000);  // Final delay after the loop completes
+
+  // Final delay
+  last_time = micros();
+  while (micros() - last_time < 1000000) {}  // 1000ms in microseconds
 }
+
 
 void clear_display() {
   // Clear the display
@@ -1089,31 +1106,55 @@ void clear_display() {
 
 void display_csh_logo() {
     clear_display();
-    
-    // Draw the bitmap at the current x position
+
+    // Draw the bitmap immediately
     matrix.drawBitmap(0, 0, csh_logo_bitmap, WIDTH, HEIGHT, scaleColor(7, 0, 7));
     
-    // Delay to control the scroll speed
-    delay(2000);  // Adjust delay for faster or slower scrolling
+    // Use micros for a 2-second pause
+    unsigned long start_time = micros();
+    while (micros() - start_time < 2000000) {
+        // Non-blocking section: You could perform other tasks here if needed.
+    }
 
     clear_display();
 }
 
+
 void extra_ball_notif() {
-  static const char* eb[] = { "Extra Ball", "At", "30000" };
-  clear_display();
-  drawCenteredTextMultipleWords(eb, 3, scaleColor(7,0,0), 1, current_font);
-  delay(4000);
-  clear_display();
+    static const char* eb[] = { "Extra Ball", "At", "30000" };
+    clear_display();
+    
+    // Display the notification text
+    drawCenteredTextMultipleWords(eb, 3, scaleColor(7, 0, 0), 1, current_font);
+    
+    // Use micros for a 4-second pause
+    unsigned long start_time = micros();
+    while (micros() - start_time < 4000000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
+
+    // Clear the display after the pause
+    clear_display();
 }
 
+
 void replay_notif() {
-  static const char* replay_num[] = { "Replay", "At", "40000" };
-  clear_display();
-  drawCenteredTextMultipleWords(replay_num, 3, scaleColor(7,0,0), 1, current_font);
-  delay(4000);
-  clear_display();
+    static const char* replay_num[] = { "Replay", "At", "40000" };
+    clear_display();
+
+    // Display the notification text
+    drawCenteredTextMultipleWords(replay_num, 3, scaleColor(7, 0, 0), 1, current_font);
+
+    // Use micros for a 4-second pause
+    unsigned long start_time = micros();
+    while (micros() - start_time < 4000000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
+
+    // Clear the display after the pause
+    clear_display();
 }
+
 
 // Function to scale colors based on brightness (integer brightness from 1 to 7)
 uint16_t scaleColor(uint8_t r, uint8_t g, uint8_t b) {
@@ -1127,31 +1168,89 @@ uint16_t scaleColor(uint8_t r, uint8_t g, uint8_t b) {
 // IN GAME ANIMATIONS
 static int warning_num = 0;
 bool warning = false;
-void show_warning(const char* warning[], int num_words, int duration, int times) {
-    for (int i = 0; i < times; i++) {
-        drawCenteredTextMultipleWords(warning, num_words, matrix.Color333(7, 0, 0), 1, current_font);
-        delay(duration);
-        clear_display();
-        delay(500); // Short delay after clearing display
-    }
-}
 void warning_animation(int num_of_warnings) {
     clear_display();
 
     if (num_of_warnings == 1) {
         static const char* warning[] = { "WARNING" };
-        show_warning(warning, 1, 900, 3); // Show "WARNING" 3 times with 900ms duration
         warning_num++;
+        drawCenteredTextMultipleWords(warning, 1, matrix.Color333(7, 0, 0), 1, current_font);
+        unsigned long start_time = micros();
+        while (micros() - start_time < 900000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
+        clear_display();
+        unsigned long start_time4 = micros();
+        while (micros() - start_time4 < 900000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
+
+        drawCenteredTextMultipleWords(warning, 1, matrix.Color333(7, 0, 0), 1, current_font);
+        unsigned long start_time2 = micros();
+        while (micros() - start_time2 < 900000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
+        clear_display();
+        unsigned long start_time5 = micros();
+        while (micros() - start_time5 < 900000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
+
+        drawCenteredTextMultipleWords(warning, 1, matrix.Color333(7, 0, 0), 1, current_font);
+        unsigned long start_time3 = micros();
+        while (micros() - start_time3 < 900000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
+        clear_display();
+        unsigned long start_time6 = micros();
+        while (micros() - start_time6 < 900000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
+
     } 
     else if (num_of_warnings == 2) {
         static const char* warning[] = { "WARNING", "WARNING" };
-        show_warning(warning, 2, 900, 3); // Show "WARNING WARNING" 3 times with 900ms duration
         warning_num++;
+        drawCenteredTextMultipleWords(warning, 2, matrix.Color333(7, 0, 0), 1, current_font);
+        unsigned long start_time7 = micros();
+        while (micros() - start_time7 < 900000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
+        clear_display();
+        unsigned long start_time8 = micros();
+        while (micros() - start_time8 < 900000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
+
+        drawCenteredTextMultipleWords(warning, 2, matrix.Color333(7, 0, 0), 1, current_font);
+        unsigned long start_time9 = micros();
+        while (micros() - start_time9 < 900000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
+        clear_display();
+        unsigned long start_time10 = micros();
+        while (micros() - start_time10 < 900000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
+
+        drawCenteredTextMultipleWords(warning, 2, matrix.Color333(7, 0, 0), 1, current_font);
+        unsigned long start_time11 = micros();
+        while (micros() - start_time11 < 900000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
+        clear_display();
+        unsigned long start_time12 = micros();
+        while (micros() - start_time12 < 900000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
     } 
     else if (num_of_warnings == 3) {
         static const char* warning[] = { "TILT" };
         drawCenteredTextMultipleWords(warning, 1, matrix.Color333(7, 0, 0), 1, current_font);
-        delay(5000); // Show "TILT" for 5000ms
+        unsigned long start_time13 = micros();
+        while (micros() - start_time13 < 5000000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
         clear_display();
         warning_num = 0;
     }
@@ -1165,11 +1264,18 @@ void ball_saved_animation() {
 
     for (int i = 0; i < 6; i++) {
         drawCenteredTextMultipleWords(ball_status, 2, matrix.Color333(0, 7, 0), 1, current_font);
-        delay(500);
+        unsigned long start_time = micros();
+        while (micros() - start_time < 500000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
         clear_display();
-        delay(100);
+        unsigned long start_time2 = micros();
+        while (micros() - start_time2 < 100000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
     }
 }
+
 
 void playfield_multiplier_animation(const char* multiplier) {
     static const char* playfield_status[] = { "Playfield", multiplier };
@@ -1177,9 +1283,15 @@ void playfield_multiplier_animation(const char* multiplier) {
 
     for (int i = 0; i < 5; i++) {
         drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(7, 7, 7), 1, current_font);
-        delay(700);
+        unsigned long start_time = micros();
+        while (micros() - start_time < 700000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
         clear_display();
-        delay(500);
+        unsigned long start_time2 = micros();
+        while (micros() - start_time2 < 500000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
     }
 }
 
@@ -1200,7 +1312,10 @@ void bagels_multiball_animation() {
       for (int x = -outerRadius; x <= outerRadius; x++) {
           if (x * x + y * y <= outerRadius * outerRadius) {
               matrix.drawPixel(centerX + x, centerY + y, outerColor);
-              delay(2);
+              unsigned long start_time = micros();
+              while (micros() - start_time < 2000) {
+                  // Non-blocking section: Insert other tasks here if needed.
+              }
           }
       }
   }
@@ -1210,20 +1325,32 @@ void bagels_multiball_animation() {
       for (int x = -innerRadius; x <= innerRadius; x++) {
           if (x * x + y * y <= innerRadius * innerRadius) {
               matrix.drawPixel(centerX + x, centerY + y, innerColor);
-              delay(2);
+              unsigned long start_time2 = micros();
+              while (micros() - start_time2 < 2000) {
+                  // Non-blocking section: Insert other tasks here if needed.
+              }
           }
       }
   }
 
-  delay(700);
+  unsigned long start_time5 = micros();
+  while (micros() - start_time5 < 700000) {
+      // Non-blocking section: Insert other tasks here if needed.
+  }
 
   // Use a loop to repeat the text animation
   for (int i = 0; i < 6; i++) {
       clear_display();
       drawCenteredTextMultipleWords(playfield_status, 2, scaleColor(4, 3, 0), 1, current_font);
-      delay(400);  // Display for 400ms
+      unsigned long start_time3 = micros();
+      while (micros() - start_time3 < 400000) {
+          // Non-blocking section: Insert other tasks here if needed.
+      }
       clear_display();
-      delay(200);  // Pause for 200ms between iterations
+      unsigned long start_time4 = micros();
+      while (micros() - start_time4 < 200000) {
+          // Non-blocking section: Insert other tasks here if needed.
+      }
   }
 }
 
@@ -1415,21 +1542,36 @@ void pcp_multiball_animation() {
   for (int i = 0; i < 3; i++) {
     clear_display();
     drawCenteredTextMultipleWords(playfield_status, 2, displayColor, 1, current_font);
-    delay(400);
+    unsigned long start_time = micros();
+    while (micros() - start_time < 400000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
     clear_display();
-    delay(200);
+    unsigned long start_time2 = micros();
+    while (micros() - start_time2 < 200000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
   }
 
   // Show "MULTIBALL" twice
   for (int i = 0; i < 2; i++) {
     clear_display();
     drawCenteredTextMultipleWords(playfield_status2, 1, displayColor, 1, current_font);
-    delay(400);
+    unsigned long start_time3 = micros();
+    while (micros() - start_time3 < 400000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
     clear_display();
-    delay(200);
+    unsigned long start_time4 = micros();
+    while (micros() - start_time4 < 200000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
   }
 
-  delay(1400); // Final delay before ending
+  unsigned long start_time = micros();
+  while (micros() - start_time < 1400000) {
+      // Non-blocking section: Insert other tasks here if needed.
+  }
 }
 
 void party_button_multiball_animation() {
@@ -1442,25 +1584,54 @@ void party_button_multiball_animation() {
     clear_display();
     brightness = 0.1;
     displayBitmapImage(_allArray[0], 64, 32);  // Display initial bitmap
-    delay(6000);
+    unsigned long start_time = micros();
+    while (micros() - start_time < 6000000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
     brightness = 1;
 
     clear_display();
     drawCenteredTextMultipleWords(button, 1, displayColor, 1, current_font);
-    delay(800);
+    unsigned long start_time2 = micros();
+    while (micros() - start_time2 < 800000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
     drawCenteredTextMultipleWords(button2, 1, displayColor, 1, current_font);
-    delay(1200);
+    unsigned long start_time3 = micros();
+    while (micros() - start_time3 < 1200000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
 
     drawCenteredTextMultipleWords(playfield_status, 2, displayColor, 1, current_font);
-    delay(900);
+    unsigned long start_time4 = micros();
+    while (micros() - start_time4 < 900000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
 
-    // Display "MULTIBALL" with dynamic delays
-    int multiballDelays[] = {300, 300, 500, 900};
-    for (int i = 0; i < 4; i++) {
+    // Display "MULTIBALL" with delays
+    for (int i = 0; i < 2; i++) {
         clear_display();
-        delay(multiballDelays[i]);
+        unsigned long start_time5 = micros();
+        while (micros() - start_time5 < 300000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
         drawCenteredTextMultipleWords(playfield_status2, 1, displayColor, 1, current_font);
-        delay(multiballDelays[i]);
+        unsigned long start_time6 = micros();
+        while (micros() - start_time6 < 300000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
+    }
+    for (int i = 0; i < 2; i++) {
+        clear_display();
+        unsigned long start_time5 = micros();
+        while (micros() - start_time5 < 500000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
+        drawCenteredTextMultipleWords(playfield_status2, 1, displayColor, 1, current_font);
+        unsigned long start_time6 = micros();
+        while (micros() - start_time6 < 500000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
     }
     clear_display();
 }
@@ -1470,7 +1641,10 @@ void player_up(const char* player) {
   static const char* display_status[] = { "Player", player, "You're Up!" };
   clear_display();
   drawCenteredTextMultipleWords(display_status, 3, scaleColor(7,1,0), 1, current_font);
-  delay(5000);
+  unsigned long start_time = micros();
+  while (micros() - start_time < 4000000) {
+      // Non-blocking section: Insert other tasks here if needed.
+  }
   clear_display();
 }
 
@@ -1484,18 +1658,30 @@ void skill_shot_animation() {
   for (int i = 0; i < 3; i++) {
     clear_display();
     drawCenteredTextMultipleWords(display_status, 2, displayColor, 1, current_font);
-    delay(500);
+    unsigned long start_time = micros();
+    while (micros() - start_time < 500000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
     clear_display();
-    delay(500);
+    unsigned long start_time2 = micros();
+    while (micros() - start_time2 < 500000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
   }
 
   // Show "50000" three times with alternating display and clear
   for (int i = 0; i < 3; i++) {
     clear_display();
     drawCenteredTextMultipleWords(display_status2, 1, displayColor, 1, current_font);
-    delay(500);
+    unsigned long start_time3 = micros();
+    while (micros() - start_time3 < 500000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
     clear_display();
-    delay(500);
+    unsigned long start_time4 = micros();
+    while (micros() - start_time4 < 500000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
   }
 }
 
@@ -1508,18 +1694,30 @@ void super_skill_shot_animation() {
   for (int i = 0; i < 10; i++) {
     clear_display();
     drawCenteredTextMultipleWords(display_status, 3, displayColor, 1, current_font);
-    delay(100);
+    unsigned long start_time = micros();
+    while (micros() - start_time < 100000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
     clear_display();
-    delay(100);
+    unsigned long start_time2 = micros();
+    while (micros() - start_time2 < 100000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
   }
 
   // Display "100000" 10 times with alternating display and clear
   for (int i = 0; i < 10; i++) {
     clear_display();
     drawCenteredTextMultipleWords(display_status2, 1, displayColor, 1, current_font);
-    delay(100);
+    unsigned long start_time3 = micros();
+    while (micros() - start_time3 < 100000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
     clear_display();
-    delay(100);
+    unsigned long start_time4 = micros();
+    while (micros() - start_time4 < 100000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
   }
 }
 
@@ -1532,18 +1730,30 @@ void impossible_skill_shot_animation() {
   for (int i = 0; i < 10; i++) {
     clear_display();
     drawCenteredTextMultipleWords(display_status, 3, displayColor, 1, current_font);
-    delay(100);
+    unsigned long start_time = micros();
+    while (micros() - start_time < 100000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
     clear_display();
-    delay(100);
+    unsigned long start_time2 = micros();
+    while (micros() - start_time2 < 100000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
   }
 
   // Display "250000" 10 times with alternating display and clear
   for (int i = 0; i < 10; i++) {
     clear_display();
     drawCenteredTextMultipleWords(display_status2, 1, displayColor, 1, current_font);
-    delay(100);
+    unsigned long start_time3 = micros();
+    while (micros() - start_time3 < 100000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
     clear_display();
-    delay(100);
+    unsigned long start_time4 = micros();
+    while (micros() - start_time4 < 100000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
   }
 }
 
@@ -1555,9 +1765,15 @@ void super_jets_animation() {
   for (int i = 0; i < 10; i++) {
     clear_display();
     drawCenteredTextMultipleWords(display_status, 2, displayColor, 1, current_font);
-    delay(100);
+    unsigned long start_time = micros();
+    while (micros() - start_time < 100000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
     clear_display();
-    delay(100);
+    unsigned long start_time2 = micros();
+    while (micros() - start_time2 < 100000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
   }
 }
 
@@ -1569,9 +1785,15 @@ void light_extra_ball_animation() {
   for (int i = 0; i < 8; i++) {
     clear_display();
     drawCenteredTextMultipleWords(display_status, 3, displayColor, 1, current_font);
-    delay(300);
+    unsigned long start_time = micros();
+    while (micros() - start_time < 300000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
     clear_display();
-    delay(300);
+    unsigned long start_time2 = micros();
+    while (micros() - start_time2 < 300000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
   }
 }
 
@@ -1587,7 +1809,10 @@ void extra_ball_animation() {
   for (int x = startX; x <= endX; x++) {
       matrix.fillScreen(matrix.Color333(0, 0, 0));            // Clear the screen to black
       matrix.fillCircle(x, centerY, radius, silverColor);     // Draw the ball at the new position
-      delay(1);                                               // Adjust delay for smooth roll
+      unsigned long start_time = micros();
+      while (micros() - start_time < 1000) {
+          // Non-blocking section: Insert other tasks here if needed.
+      }                                             // Adjust delay for smooth roll
   }
 
   clear_display();
@@ -1596,9 +1821,15 @@ void extra_ball_animation() {
   // Display "EXTRA BALL" 10 times with alternating display and clear
   for (int i = 0; i < 10; i++) {
     drawCenteredTextMultipleWords(display_status, 2, displayColor, 1, current_font);
-    delay(100);
+    unsigned long start_time2 = micros();
+    while (micros() - start_time2 < 100000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
     clear_display();
-    delay(100);
+    unsigned long start_time3 = micros();
+    while (micros() - start_time3 < 100000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
   }
 }
 
@@ -1615,9 +1846,15 @@ void csh_letters(bool c, bool s, bool h) {
     // Loop to alternate display and clear 10 times
     for (int i = 0; i < 10; i++) {
         draw_colored_characters(word, colors, current_font);
-        delay(100);
+        unsigned long start_time = micros();
+        while (micros() - start_time < 100000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
         clear_display();
-        delay(100);
+        unsigned long start_time2 = micros();
+        while (micros() - start_time2 < 100000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
     }
 }
 
@@ -1636,9 +1873,15 @@ void _1976_rollovers(bool one, bool nine, bool seven, bool six) {
     // Loop to alternate display and clear 10 times
     for (int i = 0; i < 10; i++) {
         draw_colored_characters(word, colors, current_font);
-        delay(100);
+        unsigned long start_time = micros();
+        while (micros() - start_time < 100000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
         clear_display();
-        delay(100);
+        unsigned long start_time2 = micros();
+        while (micros() - start_time2 < 100000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
     }
 }
 
@@ -1656,9 +1899,15 @@ void rtp_letters(bool r, bool t, bool p) {
     // Loop to alternate display and clear 10 times
     for (int i = 0; i < 10; i++) {
         draw_colored_characters(word, colors, current_font);
-        delay(100);
+        unsigned long start_time = micros();
+        while (micros() - start_time < 100000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
         clear_display();
-        delay(100);
+        unsigned long start_time2 = micros();
+        while (micros() - start_time2 < 100000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
     }
 }
 
@@ -1676,9 +1925,15 @@ void big_letters(bool b, bool i, bool g) {
     // Loop to alternate display and clear 10 times
     for (int i = 0; i < 10; i++) {
         draw_colored_characters(word, colors, current_font);
-        delay(100);
+        unsigned long start_time = micros();
+        while (micros() - start_time < 100000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
         clear_display();
-        delay(100);
+        unsigned long start_time2 = micros();
+        while (micros() - start_time2 < 100000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
     }
 }
 
@@ -1698,9 +1953,15 @@ void bepis_letters(bool b, bool e, bool p, bool i, bool s) {
     // Loop to alternate display and clear 10 times
     for (int j = 0; j < 10; j++) {
         draw_colored_characters(word, colors, current_font);
-        delay(100);
+        unsigned long start_time = micros();
+        while (micros() - start_time < 100000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
         clear_display();
-        delay(100);
+        unsigned long start_time2 = micros();
+        while (micros() - start_time2 < 100000) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
     }
 }
 
@@ -1710,9 +1971,15 @@ void light_mystery_animation() {
   // Loop to alternate between displaying and clearing the message 6 times
   for (int i = 0; i < 6; i++) {
     drawCenteredTextMultipleWords(display_status, 3, scaleColor(7, 1, 0), 1, current_font);
-    delay(300);
+    unsigned long start_time = micros();
+    while (micros() - start_time < 300000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
     clear_display();
-    delay(300);
+    unsigned long start_time2 = micros();
+    while (micros() - start_time2 < 300000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
   }
 }
 
@@ -1815,7 +2082,10 @@ void line_circle_animation() {
       // Update the display
       matrix.swapBuffers(true);
 
-      delay(5);
+      unsigned long start_time = micros();
+      while (micros() - start_time < 5000) {
+          // Non-blocking section: Insert other tasks here if needed.
+      }
       
       // Optionally clear the display before the next iteration to avoid trails
       matrix.fillScreen(matrix.Color333(0, 0, 0)); // Clear the screen to black
@@ -1859,9 +2129,15 @@ void jackpot_animation(const char* word, const char* word2, int numOfWords) {
 
   // Flashing effect with delays
   for (int i = 0; i < 4; ++i) {
-      delay(100);
+      unsigned long start_time = micros();
+      while (micros() - start_time < 100000) {
+          // Non-blocking section: Insert other tasks here if needed.
+      }
       clear_display();
-      delay(100);
+      unsigned long start_time2 = micros();
+      while (micros() - start_time2 < 100000) {
+          // Non-blocking section: Insert other tasks here if needed.
+      }
       drawCenteredTextMultipleWords(display_status, numOfWords, scaleColor(7,0,0), 1, current_font);
   }
 
@@ -1872,15 +2148,19 @@ void light_house_meeting() {
   static const char* display_status[] = { "HOUSE", "MEETING", "IS LIT" };
 
   const int numCycles = 5; // Number of times the display toggles
-  const int displayDuration = 300; // Duration to show text
-  const int clearDuration = 300;  // Duration to clear display
 
   // Loop through the cycle of display and clear
   for (int i = 0; i < numCycles; i++) {
     drawCenteredTextMultipleWords(display_status, 3, scaleColor(7, 1, 0), 1, current_font);
-    delay(displayDuration); // Show text for specified duration
+    unsigned long start_time = micros();
+    while (micros() - start_time < 300000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
     clear_display();        // Clear the display
-    delay(clearDuration);   // Wait before showing again
+    unsigned long start_time2 = micros();
+    while (micros() - start_time2 < 300000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
   }
 
   // Optionally, you could clear the display after the final cycle
@@ -1891,15 +2171,19 @@ void light_bagels_multiball() {
   static const char* display_status[] = { "BAGELS", "MULTIBALL", "IS LIT" };
 
   const int numCycles = 5; // Number of times the display toggles
-  const int displayDuration = 300; // Duration to show text
-  const int clearDuration = 300;  // Duration to clear display
 
   // Loop through the cycle of display and clear
   for (int i = 0; i < numCycles; i++) {
     drawCenteredTextMultipleWords(display_status, 3, scaleColor(1, 7, 0), 1, current_font);
-    delay(displayDuration); // Show text for specified duration
+    unsigned long start_time = micros();
+    while (micros() - start_time < 300000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
     clear_display();        // Clear the display
-    delay(clearDuration);   // Wait before showing again
+    unsigned long start_time2 = micros();
+    while (micros() - start_time2 < 300000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
   }
 
   // Optionally, you could clear the display after the final cycle
@@ -1910,15 +2194,19 @@ void light_pcp_multiball() {
   // Display the first set of words "PROJECT PINBALL MULTIBALL"
   static const char* display_status[] = { "PROJECT", "PINBALL", "MULTIBALL" };
   const int numCycles = 5;  // Number of times the text will be displayed
-  const int displayDuration = 200; // Duration for each cycle
-  const int clearDuration = 200;   // Duration for clearing display
 
   // Loop to display and clear the first set of words
   for (int i = 0; i < numCycles; i++) {
     drawCenteredTextMultipleWords(display_status, 3, scaleColor(1, 7, 0), 1, current_font);
-    delay(displayDuration); // Show text for specified duration
+    unsigned long start_time = micros();
+    while (micros() - start_time < 200000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
     clear_display();        // Clear the display
-    delay(clearDuration);   // Wait before showing again
+    unsigned long start_time2 = micros();
+    while (micros() - start_time2 < 200000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
   }
 
   // Display the second set of words "IS LIT"
@@ -1927,9 +2215,15 @@ void light_pcp_multiball() {
   // Loop to display and clear the second set of words
   for (int i = 0; i < numCycles; i++) {
     drawCenteredTextMultipleWords(display_status2, 2, scaleColor(1, 7, 0), 1, current_font);
-    delay(displayDuration); // Show text for specified duration
+    unsigned long start_time3 = micros();
+    while (micros() - start_time3 < 200000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
     clear_display();        // Clear the display
-    delay(clearDuration);   // Wait before showing again
+    unsigned long start_time4 = micros();
+    while (micros() - start_time4 < 200000) {
+        // Non-blocking section: Insert other tasks here if needed.
+    }
   }
 
   // Optional: Clear display at the end (can be omitted if not needed)
@@ -1941,16 +2235,20 @@ void light_party_button_multiball() {
   static const char* display_status2[] = { "IS", "LIT" };
 
   const int numCycles = 3;  // Number of times the text will be displayed
-  const int displayDuration = 400; // Duration for each cycle
-  const int clearDuration = 400;   // Duration for clearing display
 
   // Function to handle the repeated display and clear logic
   auto displayAndClear = [](const char* status[], int wordsCount) {
     for (int i = 0; i < numCycles; i++) {
       drawCenteredTextMultipleWords(status, wordsCount, scaleColor(7, 0, 0), 1, current_font);
-      delay(displayDuration); // Show text for specified duration
+      unsigned long start_time = micros();
+      while (micros() - start_time < 400000) {
+          // Non-blocking section: Insert other tasks here if needed.
+      }
       clear_display();        // Clear the display
-      delay(clearDuration);   // Wait before showing again
+      unsigned long start_time2 = micros();
+      while (micros() - start_time2 < 400000) {
+          // Non-blocking section: Insert other tasks here if needed.
+      }
     }
   };
 
@@ -1968,16 +2266,20 @@ void light_opcommathon() {
   static const char* display_status[] = { "OP", "COMMATHON", "IS LIT" };
 
   const int numCycles = 6;  // Number of times the text will be displayed
-  const int displayDuration = 200; // Duration for each cycle
-  const int clearDuration = 200;   // Duration for clearing display
 
   // Function to handle the repeated display and clear logic
   auto displayAndClear = [](const char* status[], int wordsCount) {
     for (int i = 0; i < numCycles; i++) {
       drawCenteredTextMultipleWords(status, wordsCount, scaleColor(7, 0, 0), 1, current_font);
-      delay(displayDuration); // Show text for specified duration
+      unsigned long start_time = micros();
+      while (micros() - start_time < 200000) {
+          // Non-blocking section: Insert other tasks here if needed.
+      }
       clear_display();        // Clear the display
-      delay(clearDuration);   // Wait before showing again
+      unsigned long start_time2 = micros();
+      while (micros() - start_time2 < 200000) {
+          // Non-blocking section: Insert other tasks here if needed.
+      }
     }
   };
 
@@ -1992,16 +2294,20 @@ void add_a_ball_animation() {
   static const char* display_status[] = { "BALL", "ADDED" };
 
   const int numCycles = 6;  // Number of times the text will be displayed
-  const int displayDuration = 200; // Duration for each cycle
-  const int clearDuration = 200;   // Duration for clearing display
 
   // Function to handle the repeated display and clear logic
   auto displayAndClear = [](const char* status[], int wordsCount) {
     for (int i = 0; i < numCycles; i++) {
       drawCenteredTextMultipleWords(status, wordsCount, scaleColor(0, 7, 0), 1, current_font);
-      delay(displayDuration); // Show text for specified duration
+      unsigned long start_time = micros();
+      while (micros() - start_time < 200000) {
+          // Non-blocking section: Insert other tasks here if needed.
+      }
       clear_display();        // Clear the display
-      delay(clearDuration);   // Wait before showing again
+      unsigned long start_time2 = micros();
+      while (micros() - start_time2 < 200000) {
+          // Non-blocking section: Insert other tasks here if needed.
+      }
     }
   };
 
@@ -2022,19 +2328,34 @@ void calculate_bonus_animation(int bonus, int drinks, int devcade_games, int ima
 
   clear_display();
   drawCenteredTextMultipleWords(display_status, 1, scaleColor(0,7,0), 1, current_font);
-  delay(1500);
+  unsigned long start_time = micros();
+  while (micros() - start_time < 1500000) {
+      // Non-blocking section: Insert other tasks here if needed.
+  }
   clear_display();
   drawCenteredTextMultipleWords(display_status2, 3, scaleColor(0,0,7), 1, current_font);
-  delay(1200);
+  unsigned long start_time2 = micros();
+  while (micros() - start_time2 < 1200000) {
+      // Non-blocking section: Insert other tasks here if needed.
+  }
   clear_display();
   drawCenteredTextMultipleWords(display_status3, 3, scaleColor(7,0,0), 1, current_font);
-  delay(1200);
+  unsigned long start_time3 = micros();
+  while (micros() - start_time3 < 1200000) {
+      // Non-blocking section: Insert other tasks here if needed.
+  }
   clear_display();
   drawCenteredTextMultipleWords(display_status4, 3, scaleColor(7,5,0), 1, current_font);
-  delay(1200);
+  unsigned long start_time4 = micros();
+  while (micros() - start_time4 < 1200000) {
+      // Non-blocking section: Insert other tasks here if needed.
+  }
   clear_display();
   drawCenteredTextMultipleWords(display_status5, 3, scaleColor(7,6,0), 1, current_font);
-  delay(1200);
+  unsigned long start_time5 = micros();
+  while (micros() - start_time5 < 1200000) {
+      // Non-blocking section: Insert other tasks here if needed.
+  }
   clear_display();
 
   long bonus1 = bonus + (drinks * 5000);
@@ -2048,30 +2369,43 @@ void calculate_bonus_animation(int bonus, int drinks, int devcade_games, int ima
   display_status6[0] = "Bonus";
   display_status6[1] = bonusString.c_str();  // Convert String to const char*
   drawCenteredTextMultipleWords(display_status6, 2, scaleColor(7,2,0), 1, current_font);
-  delay(400);
+  unsigned long start_time6 = micros();
+  while (micros() - start_time6 < 400000) {
+      // Non-blocking section: Insert other tasks here if needed.
+  }
   clear_display();
 
   bonusString = String(bonus2);   // Convert integer to String
   display_status6[1] = bonusString.c_str();  // Convert String to const char*
   drawCenteredTextMultipleWords(display_status6, 2, scaleColor(7,2,0), 1, current_font);
-  delay(400);
+  unsigned long start_time7 = micros();
+  while (micros() - start_time7 < 400000) {
+      // Non-blocking section: Insert other tasks here if needed.
+  }
   clear_display();
 
   bonusString = String(bonus3);   // Convert integer to String
   display_status6[1] = bonusString.c_str();  // Convert String to const char*
   drawCenteredTextMultipleWords(display_status6, 2, scaleColor(7,2,0), 1, current_font);
-  delay(400);
+  unsigned long start_time8 = micros();
+  while (micros() - start_time8 < 400000) {
+      // Non-blocking section: Insert other tasks here if needed.
+  }
   clear_display();
 
   bonusString = String(bonus4);   // Convert integer to String
   static const char* display_status7[] = { "Bonus", "Total",  ""};
   display_status7[2] = bonusString.c_str();  // Convert String to const char*
   drawCenteredTextMultipleWords(display_status7, 3, scaleColor(7,2,0), 1, current_font);
-  delay(1800);
+  unsigned long start_time9 = micros();
+  while (micros() - start_time9 < 1800000) {
+      // Non-blocking section: Insert other tasks here if needed.
+  }
   clear_display();
 }
 
-void in_game_screen(long number1, long number2, long number3, long number4, const char* centeredText, uint16_t color, int spacing, const GFXfont* font) {
+bool gotSignal = false;
+void in_game_screen(long number1, long number2, long number3, long number4, const char* centeredText, uint16_t color, uint16_t color2, uint16_t color3, uint16_t color4, int spacing, const GFXfont* font) {
     matrix.setFont(font);
     matrix.setTextSize(1); // Set text size to the smallest available size
 
@@ -2103,7 +2437,7 @@ void in_game_screen(long number1, long number2, long number3, long number4, cons
     int textLength2 = strlen(buffer2);
     for (int j = 0; j < textLength2; j++) {
         matrix.setCursor(x1 + j * (charWidth + spacing), y2);
-        matrix.setTextColor(color);
+        matrix.setTextColor(color2);
         matrix.print(buffer2[j]);
     }
 
@@ -2116,7 +2450,7 @@ void in_game_screen(long number1, long number2, long number3, long number4, cons
     // Draw the third number at the top-right, aligned with 5-digit spacing
     for (int j = 0; j < textLength3; j++) {
         matrix.setCursor(x3 + j * (charWidth + spacing), y3);
-        matrix.setTextColor(color);
+        matrix.setTextColor(color3);
         matrix.print(buffer3[j]);
     }
 
@@ -2127,7 +2461,7 @@ void in_game_screen(long number1, long number2, long number3, long number4, cons
     // Draw the fourth number directly below the third, aligned with 5-digit spacing
     for (int j = 0; j < textLength4; j++) {
         matrix.setCursor(x3 + j * (charWidth + spacing), y4);
-        matrix.setTextColor(color);
+        matrix.setTextColor(color4);
         matrix.print(buffer4[j]);
     }
 
@@ -2138,13 +2472,27 @@ void in_game_screen(long number1, long number2, long number3, long number4, cons
     int yCentered = y4 + lineHeight + 2;
 
     // Draw the centered text below the fourth number
-    for (int j = 0; j < textLengthCentered; j++) {
+    if (gotSignal) {
+      for (int j = 0; j < textLengthCentered; j++) {
         matrix.setCursor(xCentered + j * (charWidth + spacing), yCentered);
         matrix.setTextColor(matrix.Color333(255, 0, 0));
         matrix.print(centeredText[j]);
+      }
+    }
+    else {
+      centeredText = "Player 1";
+      textLengthCentered = strlen(centeredText);
+      textWidthCentered = textLengthCentered * charWidth + (textLengthCentered - 1) * spacing;
+      xCentered = ((WIDTH - textWidthCentered) / 2) - 5; // Center the text horizontally
+      yCentered = y4 + lineHeight + 2;
+      for (int j = 0; j < textLengthCentered; j++) {
+        matrix.setCursor(xCentered + j * (charWidth + spacing), yCentered);
+        matrix.setTextColor(matrix.Color333(255, 0, 0));
+        matrix.print(centeredText[j]);
+      }
+      centeredText = "Player ";
     }
 }
-
 
 void scrolling_text(const char* text, uint16_t color, int speed, const GFXfont* font) {
     matrix.setFont(font);
@@ -2172,7 +2520,10 @@ void scrolling_text(const char* text, uint16_t color, int speed, const GFXfont* 
             }
         }
 
-        delay(speed);   // Control the scrolling speed
+        unsigned long start_time = micros();
+        while (micros() - start_time < speed) {
+            // Non-blocking section: Insert other tasks here if needed.
+        }
     }
 }
 
@@ -2213,7 +2564,8 @@ void debug_animations() {
   calculate_bonus_animation(0, 2, 1, 1, 2);
 
   static const char* numbers[] = { "50000", "20", "60000", "3" };
-  in_game_screen(numbers[0], numbers[1], numbers[2], numbers[3], "Player 1", matrix.Color333(255, 50, 0), 1, current_font);
+  in_game_screen(numbers[0], numbers[1], numbers[2], numbers[3], "Player 1", 
+    matrix.Color333(255, 50, 0), matrix.Color333(255, 50, 0), matrix.Color333(255, 50, 0), matrix.Color333(255, 50, 0), 1, current_font);
   delay(200);
   scrolling_text("Shoot The RIGHT RAMP!", matrix.Color333(0, 255, 0), 0, current_font);
 
@@ -2477,9 +2829,10 @@ void setup() {
     matrix.setTextWrap(false); // Disable text wrapping
 
     clear_display();
+    
 
-    bool inGame = false;
-    attract_mode = true;
+    inGame = true;
+    attract_mode = false;
 
     //debug_animations();
 
@@ -2492,7 +2845,22 @@ void loop() {
     attract_mode = false;
 
     // Do scoring stuff (this is the default scoring screen that should be shown at all times unless stated otherwise)
-    in_game_screen(player_1_score, player_2_score, player_3_score, player_4_score, current_player, matrix.Color333(255, 50, 0), 1, current_font);
+    if (strcmp(current_player, "Player 1") == 0) {
+    in_game_screen(player_1_score, player_2_score, player_3_score, player_4_score, current_player,
+        matrix.Color333(20, 255, 0), matrix.Color333(255, 50, 0), matrix.Color333(255, 50, 0), matrix.Color333(255, 50, 0), 1, current_font);
+    } else if (strcmp(current_player, "Player 2") == 0) {
+        in_game_screen(player_1_score, player_2_score, player_3_score, player_4_score, current_player,
+            matrix.Color333(255, 50, 0), matrix.Color333(20, 255, 0), matrix.Color333(255, 50, 0), matrix.Color333(255, 50, 0), 1, current_font);
+    } else if (strcmp(current_player, "Player 3") == 0) {
+        in_game_screen(player_1_score, player_2_score, player_3_score, player_4_score, current_player,
+            matrix.Color333(255, 50, 0), matrix.Color333(255, 50, 0), matrix.Color333(20, 255, 0), matrix.Color333(255, 50, 0), 1, current_font);
+    } else if (strcmp(current_player, "Player 4") == 0) {
+        in_game_screen(player_1_score, player_2_score, player_3_score, player_4_score, current_player,
+            matrix.Color333(255, 50, 0), matrix.Color333(255, 50, 0), matrix.Color333(255, 50, 0), matrix.Color333(20, 255, 0), 1, current_font);
+    } else {
+        in_game_screen(player_1_score, player_2_score, player_3_score, player_4_score, current_player,
+            matrix.Color333(20, 255, 0), matrix.Color333(255, 50, 0), matrix.Color333(255, 50, 0), matrix.Color333(255, 50, 0), 1, current_font);
+    }
 
     // Check if any of these occur
     if (Serial1.available()) {
@@ -2502,6 +2870,8 @@ void loop() {
         type |= Serial1.read();
         switch (type) {
           case 0x0004: {
+            gotSignal = true;
+            
             // Game Status Update
             game_status_update data;
             Serial.readBytes((char*)&data, sizeof(data));
@@ -2709,7 +3079,7 @@ void loop() {
     inGame = true;
     attract_mode = false;
 
-    // attractMode();
+    attractMode();
     
     check_for_game_start();
   }
