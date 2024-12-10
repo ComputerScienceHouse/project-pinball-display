@@ -2815,7 +2815,8 @@ void check_for_game_start() {
 }
 
 void setup() {
-    Serial1.begin(9600);
+    Serial1.begin(9600, SERIAL_8O2);
+    Serial.begin(9600);
     // Get Scores from 2040 later
     strcpy(grand_champion, "GAR 50000");
     strcpy(high_score_1, "LEO 10000");
@@ -2839,6 +2840,20 @@ void setup() {
     // Set text size to 1 (8x8 pixels)
     matrix.setTextSize(1);
 }
+
+char debug_buf[100] = {0};
+
+static int read_comm_good() {
+  int read = -1;
+  
+  while (!Serial1.available());
+
+  do {
+    read = Serial1.read();
+  } while (read == -1);
+  
+  return read;
+} 
 
 void loop() {
   if (inGame == true) {
@@ -2864,20 +2879,24 @@ void loop() {
 
     // Check if any of these occur
     if (Serial1.available()) {
-      if (Serial1.read() == 0x07 && Serial1.read() == 0x02) {
-        unsigned short type = Serial1.read();
+      if (read_comm_good() == 0x07 && read_comm_good() == 0x02) {
+        unsigned short type = read_comm_good();
         type <<= 8;
-        type |= Serial1.read();
+        type |= read_comm_good();
+        sprintf(debug_buf, "Comm ype read: %x", type);
+        Serial.println(debug_buf);
         switch (type) {
           case 0x0004: {
             gotSignal = true;
             
             // Game Status Update
             game_status_update data;
-            Serial.readBytes((char*)&data, sizeof(data));
+            Serial1.readBytes((char*)&data, sizeof(data));
 
             // Get the data
             player_1_score = data.player_1_score;
+            sprintf(debug_buf, "Player score: %d", player_1_score);
+            Serial.println(debug_buf);
             player_2_score = data.player_2_score;
             player_3_score = data.player_3_score;
             player_4_score = data.player_4_score;
@@ -2891,7 +2910,7 @@ void loop() {
           case 0x0005: {
             // End of Ball
             end_of_ball data;
-            Serial.readBytes((char*)&data, sizeof(data));
+            Serial1.readBytes((char*)&data, sizeof(data));
 
             drinks_dropped = data.drinks_dropped;
             devcade_games = data.devcade_games;
@@ -2905,7 +2924,7 @@ void loop() {
           case 0x0006: {
             // Ball Pushed
             ball_pushed data;
-            Serial.readBytes((char*)&data, sizeof(data));
+            Serial1.readBytes((char*)&data, sizeof(data));
 
             num_balls_pushed = data.balls_pushed;
             break;
@@ -2913,7 +2932,7 @@ void loop() {
           case 0x0007: {
             // Scoop Light Lit
             scoop_light data;
-            Serial.readBytes((char*)&data, sizeof(data));
+            Serial1.readBytes((char*)&data, sizeof(data));
 
             switch (data.scoop_light_type) {
               case MODE:
@@ -3000,7 +3019,7 @@ void loop() {
           case 0x0008: {
             // Multiball Jackpot (ETHAN TODO)
             multiball_jackpot data;
-            Serial.readBytes((char*)&data, sizeof(data));
+            Serial1.readBytes((char*)&data, sizeof(data));
 
             jackpot_animation("JACKPOT", " ", 1);
             break;
@@ -3013,7 +3032,7 @@ void loop() {
           case 0x000a: {
             // Thing Hit
             thing_hit data;
-            Serial.readBytes((char*)&data, sizeof(data));
+            Serial1.readBytes((char*)&data, sizeof(data));
 
             which_hit = data.which_hit;
             break;
@@ -3049,6 +3068,8 @@ void loop() {
             warning_num = 0;
             break;
           }
+
+          default: {}
         }
       }
     }
